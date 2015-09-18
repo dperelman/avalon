@@ -44,7 +44,8 @@ if (Meteor.isClient) {
 
       var game = generateNewGame();
       var player = generateNewPlayer(game, playerName);
-      debugger;
+
+      Meteor.subscribe('games', game.accessCode);
     }
   });
 }
