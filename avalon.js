@@ -47,6 +47,14 @@ if (Meteor.isClient) {
         Session.set("playerID", player._id);
         Session.set("currentView", "lobby");
       });
+
+      Tracker.autorun(trackGameState);
+    }
+  });
+
+  Template.newGame.helpers({
+    track: function () {
+      trackGameState();
     }
   });
 
@@ -85,6 +93,8 @@ if (Meteor.isClient) {
           return false;
         }
       });
+
+      Tracker.autorun(trackGameState);
     }
   });
 
@@ -99,8 +109,7 @@ if (Meteor.isClient) {
       }
 
       assignTeams(players);
-
-      debugger;
+      Games.update(game._id, {$set: {state: 'inProgress'}});
     }
   });
 
@@ -121,6 +130,12 @@ if (Meteor.isClient) {
       var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
 
       return players;
+    }
+  });
+
+  Template.rolePhase.helpers({
+    player: function () {
+      return getCurrentPlayer();
     }
   });
 }
@@ -201,8 +216,33 @@ function getAccessCode() {
 }
 
 function shuffle(array){
-    for(var j, x, i = array.length; i; j = Math.floor(Math.random() * i), x = array[--i], array[i] = array[j], array[j] = x);
-    return array;
+  for(var j, x, i = array.length; i; j = Math.floor(Math.random() * i), x = array[--i], array[i] = array[j], array[j] = x);
+  return array;
+}
+
+function trackGameState() {
+  var gameID = Session.get("gameID");
+  var playerID = Session.get("playerID");
+
+  if (!gameID || !playerID){
+    return;
+  }
+
+  var game = Games.findOne(gameID);
+  var player = Players.findOne(playerID);
+
+  if (!game || !player){
+    Session.set("gameID", null);
+    Session.set("playerID", null);
+    Session.set("currentView", "startMenu");
+    return;
+  }
+
+  if(game.state === "inProgress"){
+    Session.set("currentView", "rolePhase");
+  } else if (game.state === "lobby") {
+    Session.set("currentView", "lobby");
+  }
 }
 
 function assignTeams(players) {
