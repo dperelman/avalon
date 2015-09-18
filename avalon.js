@@ -24,16 +24,8 @@ if (Meteor.isClient) {
   Template.newGame.events({
     "click .button-main-menu": function (event) {
       Session.set("currentView", "startMenu");
-    }
-  });
+    },
 
-  Template.joinGame.events({
-    "click .button-main-menu": function (event) {
-      Session.set("currentView", "startMenu");
-    }
-  });
-
-  Template.newGame.events({
     'submit .new-game-form': function (event) {
       event.preventDefault();
       var playerName = $(event.currentTarget).find('.name-input').val();
@@ -54,6 +46,45 @@ if (Meteor.isClient) {
         Session.set("gameID", game._id);
         Session.set("playerID", player._id);
         Session.set("currentView", "lobby");
+      });
+    }
+  });
+
+  Template.joinGame.events({
+    "click .button-main-menu": function (event) {
+      Session.set("currentView", "startMenu");
+    },
+
+    'submit .join-game-form': function (event) {
+      event.preventDefault();
+
+      var code = $(event.currentTarget).find('.code-input').val();
+      var name = $(event.currentTarget).find('.name-input').val();
+
+      if (!name){
+        return false;
+      }
+
+      code = code.trim().toLowerCase();
+
+      Session.set("loading", true);
+
+      Meteor.subscribe('games', code, function onReady() {
+        Session.set("loading", false);
+
+        var game = Games.findOne({ accessCode: code });
+
+        if (game) {
+          Meteor.subscribe('players', game._id);
+          player = GenerateNewPlayer(game, name);
+
+          Session.set("gameID", game._id);
+          Session.set("playerID", player._id);
+          Session.set("currentView", "lobby");
+        } else {
+          //invalid code validation here
+          return false;
+        }
       });
     }
   });
