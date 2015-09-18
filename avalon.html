@@ -57,5 +57,14 @@
   <div class="lobby">
     <h3>Lobby</h3>
     <p>{{code}}</p>
+    <ul>
+      {{#each players}}
+        <li>{{ name }}</li>
+      {{/each}}
+    </ul>
   </div>
+</template>
+
+<template name="player">
+
 </template>

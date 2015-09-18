@@ -89,8 +89,22 @@ if (Meteor.isClient) {
   });
 
   Template.lobby.helpers({
+    game: function () {
+      return getCurrentGame();
+    },
     code: function () {
       return getAccessCode();
+    },
+    players: function () {
+      var game = getCurrentGame();
+
+      if (!game) {
+        return null;
+      }
+
+      var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
+
+      return players;
     }
   });
 }
@@ -153,6 +167,14 @@ function getCurrentGame() {
 
   if (gameID) {
     return Games.findOne(gameID);
+  }
+}
+
+function getCurrentPlayer() {
+  var playerID = Session.get("playerID");
+
+  if (playerID) {
+    return Players.findOne(playerID);
   }
 }
 
