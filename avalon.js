@@ -88,6 +88,22 @@ if (Meteor.isClient) {
     }
   });
 
+  Template.lobby.events({
+    "click .button-start":function () {
+
+      var game = getCurrentGame();
+      var players = Players.find({'gameID': game._id});
+
+      if (players.count < 5) {
+        return false;
+      }
+
+      assignTeams(players);
+
+      debugger;
+    }
+  });
+
   Template.lobby.helpers({
     game: function () {
       return getCurrentGame();
@@ -182,4 +198,49 @@ function getAccessCode() {
   var game = getCurrentGame();
   if (!game) { return; }
   return game.accessCode;
+}
+
+function shuffle(array){
+    for(var j, x, i = array.length; i; j = Math.floor(Math.random() * i), x = array[--i], array[i] = array[j], array[j] = x);
+    return array;
+}
+
+function assignTeams(players) {
+  var teams = [];
+  switch (players.count()) {
+    case 5:
+      teams = ["spy", "spy",
+               "resistance", "resistance", "resistance"];
+      break;
+    case 6:
+      teams = ["spy", "spy",
+               "resistance", "resistance", "resistance", "resistance"];
+      break;
+    case 7:
+      teams = ["spy", "spy", "spy",
+               "resistance", "resistance", "resistance", "resistance"];
+      break;
+    case 8:
+      teams = ["spy", "spy",  "spy",
+               "resistance", "resistance", "resistance", "resistance", "resistance"];
+      break;
+    case 9:
+      teams = ["spy", "spy",  "spy",
+               "resistance", "resistance", "resistance", "resistance", "resistance", "resistance"];
+      break;
+    case 10:
+      teams = ["spy", "spy", "spy",  "spy",
+               "resistance", "resistance", "resistance", "resistance", "resistance", "resistance"];
+      break;
+  }
+
+  shuffle(teams);
+
+  players.forEach(function (player, index) {
+    Players.update(player._id, {$set: {
+      team: teams.pop()
+    }});
+  });
+
+  return players;
 }
