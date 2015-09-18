@@ -46,6 +46,15 @@ if (Meteor.isClient) {
       var player = generateNewPlayer(game, playerName);
 
       Meteor.subscribe('games', game.accessCode);
+
+      Session.set("loading", true);
+
+      Meteor.subscribe('players', game._id, function onReady() {
+        Session.set("loading", false);
+        Session.set("gameID", game._id);
+        Session.set("playerID", player._id);
+        Session.set("currentView", "lobby");
+      });
     }
   });
 }
@@ -53,8 +62,19 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
   Meteor.startup(function () {
     // code to run on server at startup
+    Games.remove({});
+    Players.remove({});
+  });
+
+  Meteor.publish('games', function(accessCode) {
+    return Games.find({"accessCode": accessCode});
+  });
+
+  Meteor.publish('players', function(gameID) {
+    return Players.find({"gameID": gameID});
   });
 }
+
 
 function generateNewGame() {
   var game = {
