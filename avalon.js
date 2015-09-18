@@ -57,7 +57,6 @@ if (Meteor.isClient) {
 
     'submit .join-game-form': function (event) {
       event.preventDefault();
-
       var code = $(event.currentTarget).find('.code-input').val();
       var name = $(event.currentTarget).find('.name-input').val();
 
@@ -76,7 +75,7 @@ if (Meteor.isClient) {
 
         if (game) {
           Meteor.subscribe('players', game._id);
-          player = GenerateNewPlayer(game, name);
+          player = generateNewPlayer(game, name);
 
           Session.set("gameID", game._id);
           Session.set("playerID", player._id);
@@ -86,6 +85,12 @@ if (Meteor.isClient) {
           return false;
         }
       });
+    }
+  });
+
+  Template.lobby.helpers({
+    code: function () {
+      return getAccessCode();
     }
   });
 }
@@ -141,4 +146,18 @@ function generateNewPlayer(game, name) {
   var playerID = Players.insert(player);
   player = Players.findOne(playerID);
   return player;
+}
+
+function getCurrentGame() {
+  var gameID = Session.get("gameID");
+
+  if (gameID) {
+    return Games.findOne(gameID);
+  }
+}
+
+function getAccessCode() {
+  var game = getCurrentGame();
+  if (!game) { return; }
+  return game.accessCode;
 }
