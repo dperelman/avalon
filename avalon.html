@@ -1,0 +1,48 @@
+<head>
+  <title>Avalon</title>
+</head>
+
+<body>
+  {{> main}}
+</body>
+
+<template name="main">
+    <h3>What up my glip glops!</h3>
+    <div class="main-content">
+      {{> Template.dynamic template=whichView}}
+      <hr>
+
+      <!-- {{> footer }} -->
+    </div>
+</template>
+
+<template name="startMenu">
+  <div class="main-menu">
+    <h3>Welcome to Avalon</h3>
+
+    <div class="button-container">
+      <button class="button-new-game">New Game</button>
+      <button class="button-join-game">Join Game</button>
+    </div>
+
+  </div>
+</template>
+
+<template name="newGame">
+  <div class="new-game">
+    <h3>New Game</h3>
+
+    <input class="name-input" type="text" placeholder="Name">
+    <button class="button-main-menu">Back</button>
+  </div>
+</template>
+
+<template name="joinGame">
+  <div class="join-game">
+    <h3>Join Game</h3>
+
+    <input class="code-input" type="text" placeholder="Access Code">
+    <input class="name-input" type="text" placeholder="Name">
+    <button class="button-main-menu">Back</button>
+  </div>
+</template>
