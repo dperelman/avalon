@@ -49,12 +49,16 @@ if (Meteor.isClient) {
       });
 
       Tracker.autorun(trackGameState);
+      Tracker.autorun(trackPlayersState);
     }
   });
 
   Template.newGame.helpers({
     track: function () {
       trackGameState();
+    },
+    trackPlayers: function () {
+      trackPlayersState();
     }
   });
 
@@ -95,6 +99,7 @@ if (Meteor.isClient) {
       });
 
       Tracker.autorun(trackGameState);
+      Tracker.autorun(trackPlayersState);
     }
   });
 
@@ -104,7 +109,7 @@ if (Meteor.isClient) {
       var game = getCurrentGame();
       var players = Players.find({'gameID': game._id});
 
-      if (players.count < 5) {
+      if (players.count < 3) {
         return false;
       }
 
@@ -122,20 +127,28 @@ if (Meteor.isClient) {
     },
     players: function () {
       var game = getCurrentGame();
-
-      if (!game) {
-        return null;
-      }
-
+      if (!game) { return null; }
       var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
-
       return players;
+    }
+  });
+
+  Template.rolePhase.events({
+    'click button': function () {
+      var player = getCurrentPlayer();
+      Players.update(player._id, {$set: {ready: "ready"}});
     }
   });
 
   Template.rolePhase.helpers({
     player: function () {
       return getCurrentPlayer();
+    },
+    players: function () {
+      var game = getCurrentGame();
+      if (!game) { return null; }
+      var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
+      return players;
     }
   });
 }
@@ -220,34 +233,15 @@ function shuffle(array){
   return array;
 }
 
-function trackGameState() {
-  var gameID = Session.get("gameID");
-  var playerID = Session.get("playerID");
-
-  if (!gameID || !playerID){
-    return;
-  }
-
-  var game = Games.findOne(gameID);
-  var player = Players.findOne(playerID);
-
-  if (!game || !player){
-    Session.set("gameID", null);
-    Session.set("playerID", null);
-    Session.set("currentView", "startMenu");
-    return;
-  }
-
-  if(game.state === "inProgress"){
-    Session.set("currentView", "rolePhase");
-  } else if (game.state === "lobby") {
-    Session.set("currentView", "lobby");
-  }
-}
-
 function assignTeams(players) {
   var teams = [];
   switch (players.count()) {
+    case 3:
+      teams = ["spy", "resistance", "resistance"];
+      break;
+    case 4:
+      teams = ["spy", "resistance", "resistance", "resistance"];
+      break;
     case 5:
       teams = ["spy", "spy",
                "resistance", "resistance", "resistance"];
@@ -283,4 +277,38 @@ function assignTeams(players) {
   });
 
   return players;
+}
+
+function trackGameState() {
+  var gameID = Session.get("gameID");
+  var playerID = Session.get("playerID");
+
+  if (!gameID || !playerID){
+    return;
+  }
+
+  var game = Games.findOne(gameID);
+  var player = Players.findOne(playerID);
+
+  if (!game || !player){
+    Session.set("gameID", null);
+    Session.set("playerID", null);
+    Session.set("currentView", "startMenu");
+    return;
+  }
+
+  if(game.state === "inProgress"){
+    Session.set("currentView", "rolePhase");
+  } else if (game.state === "lobby") {
+    Session.set("currentView", "lobby");
+  }
+}
+
+function trackPlayersState() {
+  var game = Games.findOne(Session.get("gameID"));
+  var players = Players.find({'gameID': game._id});
+  debugger;
+  players.forEach(function () {
+
+  });
 }

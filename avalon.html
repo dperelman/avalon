@@ -74,5 +74,11 @@
   <div class="role-phase">
     <h3>Role Phase</h3>
     <p>Your team: {{player.team}}</p>
+    <ul>
+      {{#each players}}
+        <li>{{name}}: {{ ready }}</li>
+      {{/each}}
+    </ul>
+    <button type="submit"></button>
   </div>
 </template>
