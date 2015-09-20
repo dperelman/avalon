@@ -93,7 +93,9 @@
   </style>
   <div class="pick-phase">
     <h3>Pick Phase</h3>
-
+    {{#each chosenPlayers}}
+      <li>{{name}}</li>
+    {{/each}}
   </div>
 </template>
 

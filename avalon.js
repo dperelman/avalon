@@ -170,6 +170,11 @@ if (Meteor.isClient) {
     },
     chosen: function () {
       return getCurrentPlayer().chosen;
+    },
+    chosenPlayers:function () {
+      var game = getCurrentGame();
+      var players = Players.find({'gameID': game._id, 'chosen': true}, {'sort': {'createdAt': 1}}).fetch();
+      return players;
     }
   });
 
