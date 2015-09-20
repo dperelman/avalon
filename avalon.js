@@ -173,7 +173,8 @@ function generateNewGame() {
   var game = {
     accessCode: generateAccessCode(),
     numPlayers: 0,
-    state: "lobby"
+    state: "lobby",
+    turn: 1,
   };
 
   var gameID = Games.insert(game);
@@ -193,11 +194,12 @@ function generateAccessCode() {
 }
 
 function generateNewPlayer(game, name) {
+  Games.update(game._id, {$set: {numPlayers: game.numPlayers + 1}});
+
   var player = {
     gameID: game._id,
     name: name,
-    roll: null,
-    team: null
+    ord: game.numPlayers
   };
 
   var playerID = Players.insert(player);
@@ -300,15 +302,17 @@ function trackGameState() {
     Session.set("currentView", "rolePhase");
   } else if (game.state === "lobby") {
     Session.set("currentView", "lobby");
+  } else if (game.state === "pickPhase") {
+    Session.set("currentView", "pickPhase");
   }
 }
 
 function trackPlayersState() {
   var game = Games.findOne(Session.get("gameID"));
   var players = Players.find({'gameID': game._id});
+  var leader = Players.find({'gameID': game._id, 'ord': game.turn % game.numPlayers});
 
-  if (allReady(players)){
-    Session.set("currentView", "pickPhase");
+  if (Session.get("currentView") === "rolePhase" && allReady(players)){
     Games.update(game._id, {$set: {state: 'pickPhase'}});
   }
 }
