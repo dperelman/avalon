@@ -150,6 +150,34 @@ if (Meteor.isClient) {
       return players;
     }
   });
+
+  Template.pickPhase.events({
+
+  });
+
+  Template.pickPhaseLeader.helpers({
+    players: function () {
+      var game = getCurrentGame();
+      if (!game) { return null; }
+      var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
+      return players;
+    }
+  });
+
+  Template.pickPhase.helpers({
+    player: function () {
+      return getCurrentPlayer();
+    },
+    chosen: function () {
+      return getCurrentPlayer().chosen;
+    }
+  });
+
+  Template.player.events({
+    'click .player':function () {
+      Players.update(this._id, {$set: {chosen: ! this.chosen}});
+    }
+  });
 }
 
 if (Meteor.isServer) {

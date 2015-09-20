@@ -84,6 +84,13 @@
 </template>
 
 <template name="pickPhase">
+  <style media="screen">
+    {{#if chosen}}
+      body {
+        background-color: blue;
+      }
+    {{/if}}
+  </style>
   <div class="pick-phase">
     <h3>Pick Phase</h3>
 
@@ -91,8 +98,24 @@
 </template>
 
 <template name="pickPhaseLeader">
+  <style media="screen">
+      body {
+        background-color: green;
+      }
+  </style>
   <div class="pick-phase">
     <h3>Pick Phase</h3>
     <h2>You are the leader!</h2>
+    <ul>
+      {{#each players}}
+        {{> player}}
+      {{/each}}
+    </ul>
   </div>
+</template>
+
+<template name="player">
+  <li class="player">
+    {{name}} - {{chosen}}
+  </li>
 </template>
