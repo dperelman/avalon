@@ -49,7 +49,6 @@ if (Meteor.isClient) {
       });
 
       Tracker.autorun(trackGameState);
-      Tracker.autorun(trackPlayersState);
     }
   });
 
@@ -99,7 +98,6 @@ if (Meteor.isClient) {
       });
 
       Tracker.autorun(trackGameState);
-      Tracker.autorun(trackPlayersState);
     }
   });
 
@@ -114,7 +112,7 @@ if (Meteor.isClient) {
       }
 
       assignTeams(players);
-      Games.update(game._id, {$set: {state: 'inProgress'}});
+      Games.update(game._id, {$set: {state: 'rolePhase'}});
     }
   });
 
@@ -137,6 +135,7 @@ if (Meteor.isClient) {
     'click button': function () {
       var player = getCurrentPlayer();
       Players.update(player._id, {$set: {ready: "ready"}});
+      Tracker.autorun(trackPlayersState);
     }
   });
 
@@ -297,7 +296,7 @@ function trackGameState() {
     return;
   }
 
-  if(game.state === "inProgress"){
+  if(game.state === "rolePhase"){
     Session.set("currentView", "rolePhase");
   } else if (game.state === "lobby") {
     Session.set("currentView", "lobby");
@@ -307,8 +306,20 @@ function trackGameState() {
 function trackPlayersState() {
   var game = Games.findOne(Session.get("gameID"));
   var players = Players.find({'gameID': game._id});
-  debugger;
-  players.forEach(function () {
 
+  if (allReady(players)){
+    Session.set("currentView", "pickPhase");
+    Games.update(game._id, {$set: {state: 'pickPhase'}});
+  }
+}
+
+function allReady(players) {
+  var result = true;
+  players.forEach(function (player) {
+    if (player.ready !== "ready") {
+      result = false;
+    }
   });
+
+  return result;
 }
