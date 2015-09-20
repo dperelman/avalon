@@ -151,8 +151,11 @@ if (Meteor.isClient) {
     }
   });
 
-  Template.pickPhase.events({
-
+  Template.pickPhaseLeader.events({
+    'click button':function () {
+      var game = getCurrentGame();
+      Games.update(game._id, {$set: {state: "votingPhase"}});
+    }
   });
 
   Template.pickPhaseLeader.helpers({
@@ -181,6 +184,14 @@ if (Meteor.isClient) {
   Template.player.events({
     'click .player':function () {
       Players.update(this._id, {$set: {chosen: ! this.chosen}});
+    }
+  });
+
+  Template.votingPhase.helpers({
+    chosenPlayers: function () {
+      var game = getCurrentGame();
+      var players = Players.find({'gameID': game._id, 'chosen': true}, {'sort': {'createdAt': 1}}).fetch();
+      return players;
     }
   });
 }
@@ -341,6 +352,8 @@ function trackGameState() {
 
   if(game.state === "rolePhase"){
     Session.set("currentView", "rolePhase");
+  } else if (game.state === "votingPhase") {
+    Session.set("currentView", 'votingPhase');
   } else if (game.state === "lobby") {
     Session.set("currentView", "lobby");
   } else {
