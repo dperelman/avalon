@@ -174,7 +174,7 @@ function generateNewGame() {
     accessCode: generateAccessCode(),
     numPlayers: 0,
     state: "lobby",
-    turn: 1,
+    turn: 0,
   };
 
   var gameID = Games.insert(game);
@@ -290,6 +290,14 @@ function trackGameState() {
 
   var game = Games.findOne(gameID);
   var player = Players.findOne(playerID);
+  var players = Players.find({'gameID': game._id});
+  var leader = Players.findOne({
+     $and: [
+            { 'gameID' : game._id },
+            { 'ord': game.turn % game.numPlayers }
+          ]
+   });
+  updateLeader(leader, players);
 
   if (!game || !player){
     Session.set("gameID", null);
@@ -302,15 +310,22 @@ function trackGameState() {
     Session.set("currentView", "rolePhase");
   } else if (game.state === "lobby") {
     Session.set("currentView", "lobby");
-  } else if (game.state === "pickPhase") {
-    Session.set("currentView", "pickPhase");
+  } else {
+    if (player._id === leader._id) {
+      if (game.state === "pickPhase") {
+        Session.set("currentView", "pickPhaseLeader");
+      }
+    } else {
+      if (game.state === "pickPhase") {
+        Session.set("currentView", "pickPhase");
+      }
+    }
   }
 }
 
 function trackPlayersState() {
   var game = Games.findOne(Session.get("gameID"));
   var players = Players.find({'gameID': game._id});
-  var leader = Players.find({'gameID': game._id, 'ord': game.turn % game.numPlayers});
 
   if (Session.get("currentView") === "rolePhase" && allReady(players)){
     Games.update(game._id, {$set: {state: 'pickPhase'}});
@@ -326,4 +341,12 @@ function allReady(players) {
   });
 
   return result;
+}
+
+function updateLeader(leader, players) {
+  players.forEach(function (player) {
+    Players.update(player._id, {$set: {leader: true}});
+  });
+
+  Players.update(leader._id, {$set: {leader: true}});
 }
