@@ -377,16 +377,14 @@ function trackGameState() {
     Session.set("currentView", 'votingPhase');
   } else if (game.state === "lobby") {
     Session.set("currentView", "lobby");
-  } else {
+  } else if (game.state === "pickPhase"){
     if (player._id === leader._id) {
-      if (game.state === "pickPhase") {
-        Session.set("currentView", "pickPhaseLeader");
-      }
+      Session.set("currentView", "pickPhaseLeader");
     } else {
-      if (game.state === "pickPhase") {
-        Session.set("currentView", "pickPhase");
-      }
+      Session.set("currentView", "pickPhase");
     }
+  } else if (game.state === "missionPhase") {
+    Session.set("currentView", "missionPhase");
   }
 }
 
@@ -399,8 +397,13 @@ function trackPlayersState() {
   }
 
   if (Session.get("currentView") === "votingPhase" && !!allVoted(players)){
-    resetAll(players);
-    Games.update(game._id, {$set: {state: "pickPhase"}});
+    if (allVoted(players) === "accept"){
+      Games.update(game._id, {$set: {state: "missionPhase"}});
+
+    } else {
+      resetAll(players);
+      Games.update(game._id, {$set: {state: "pickPhase"}});
+    }
   }
 }
 
