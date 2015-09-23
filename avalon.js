@@ -192,6 +192,23 @@ if (Meteor.isClient) {
       var game = getCurrentGame();
       var players = Players.find({'gameID': game._id, 'chosen': true}, {'sort': {'createdAt': 1}}).fetch();
       return players;
+    },
+    players: function () {
+      var game = getCurrentGame();
+      if (!game) { return null; }
+      var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
+      return players;
+    }
+  });
+
+  Template.votingPhase.events({
+    'click .button-accept':function () {
+      var player = getCurrentPlayer();
+      Players.update(player._id, {$set: {vote: "accept"}});
+    },
+    'click .button-reject':function () {
+      var player = getCurrentPlayer();
+      Players.update(player._id, {$set: {vote: "reject"}});
     }
   });
 }

@@ -130,9 +130,17 @@
     <h3>Voting Phase</h3>
   </div>
 
-  {{#each chosenPlayers}}
-    <li>{{name}}</li>
-  {{/each}}
+  <ul>
+    {{#each chosenPlayers}}
+      <li>{{name}}</li>
+    {{/each}}
+  </ul>
+
+  <ul>
+    {{#each players}}
+      <li>{{ name }} - {{ vote }}</li>
+    {{/each}}
+  </ul>
 
   <div class="button-container">
     <button class="button-accept">Accept</button>
