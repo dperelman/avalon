@@ -108,6 +108,8 @@
   </style>
   <div class="pick-phase">
     <h3>Pick Phase</h3>
+    {{> voteResults}}
+
     {{#each chosenPlayers}}
       <li>{{name}}</li>
     {{/each}}
@@ -125,6 +127,8 @@
   <div class="pick-phase">
     <h3>Pick Phase</h3>
     <p><b>You are the leader!</b> Tap on the names to choose a team.</p>
+    {{> voteResults}}
+
     <ul>
       {{#each players}}
         {{> player}}
@@ -175,6 +179,14 @@
   <div class="mission-phase">
     <h3>Mission time!</h3>
 
+    {{> voteResults}}
+  </div>
+</template>
+
+<template name="voteResults">
+  {{#if exists}}
+    <h3>Previous Vote Results</h3>
+
     <p><b>Voted to accept:</b></p>
     <ul>
       {{#each acceptVoters}}
@@ -188,5 +200,5 @@
         <li>{{name}}</li>
       {{/each}}
     </ul>
-  </div>
+  {{/if}}
 </template>

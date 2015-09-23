@@ -240,7 +240,12 @@ if (Meteor.isClient) {
     }
   });
 
-  Template.missionPhase.helpers({
+  Template.voteResults.helpers({
+    exists: function () {
+      var game = getCurrentGame();
+      if (!game || game.turn < 1) { return null; }
+      return true;
+    },
     acceptVoters: function () {
       var game = getCurrentGame();
       if (!game) { return null; }
@@ -441,6 +446,7 @@ function trackPlayersState() {
       resetVotes(players);
       Games.update(game._id, {$set: {state: "missionPhase", turn: game.turn + 1}});
     } else {
+      recordVotes(players);
       resetAll(players);
       Games.update(game._id, {$set: {state: "pickPhase", turn: game.turn + 1 }});
     }
