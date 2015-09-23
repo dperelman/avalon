@@ -398,7 +398,7 @@ function trackPlayersState() {
     Games.update(game._id, {$set: {state: 'pickPhase'}});
   }
 
-  if (Session.get("currentView") === "votingPhase" && allVoted(players)){
+  if (Session.get("currentView") === "votingPhase" && !!allVoted(players)){
     resetAll(players);
     Games.update(game._id, {$set: {state: "pickPhase"}});
   }
@@ -416,14 +416,21 @@ function allReady(players) {
 }
 
 function allVoted(players) {
-  result = true;
+  var accept = 0;
+  var reject = 0;
   players.forEach(function (player) {
-    if (!player.vote){
-      result = false;
+    if (player.vote === "accept") {
+      accept++;
+    } else if (player.vote === "reject"){
+      reject++;
     }
   });
 
-  return result;
+  if(players.count() > (accept + reject)) {
+    return false;
+  } else {
+    return ( accept > reject ? "accept" : "reject" );
+  }
 }
 
 function resetAll(players) {
