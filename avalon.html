@@ -48,19 +48,20 @@
     <form class="join-game-form">
       <input class="code-input" type="text" placeholder="Access Code">
       <input class="name-input" type="text" placeholder="Name">
+
+      <div class="button-container">
+        <button type="submit" class="button-join">Join</button>
+        <button class="button-main-menu">Back</button>
+      </div>
     </form>
 
-    <div class="button-container">
-      <button type="submit" class="button-join">Join</button>
-      <button class="button-main-menu">Back</button>
-    </div>
   </div>
 </template>
 
 <template name="lobby">
   <div class="lobby">
     <h3>Lobby</h3>
-    <p>{{code}}</p>
+    <p>Access Code: {{code}}</p>
     <ul>
       {{#each players}}
         <li>{{ name }}</li>
@@ -78,19 +79,29 @@
   <div class="role-phase">
     <h3>Role Phase</h3>
     <p>Your team: {{player.team}}</p>
+
+    {{#if isSpy}}
+    <ul>
+      {{#each allSpies}}
+        <li>{{name}}</li>
+      {{/each}}
+    </ul>
+    {{/if}}
+
+    <p><b>Ready up!</b></p>
     <ul>
       {{#each players}}
         <li>{{name}}: {{ ready }}</li>
       {{/each}}
     </ul>
-    <button type="submit">Ready/////////////////////////////////</button>
+    <button type="submit">Ready</button>
   </div>
 </template>
 
 <template name="pickPhase">
   <style media="screen">
     {{#if chosen}}
-      body {
+      .container {
         background-color: blue;
       }
     {{/if}}
@@ -124,8 +135,8 @@
 </template>
 
 <template name="player">
-  <li class="player">
-    {{name}} - {{chosen}}
+  <li class="player {{#if chosen}}chosen{{/if}}">
+    {{name}}
   </li>
 </template>
 
@@ -134,15 +145,19 @@
     <h3>Voting Phase</h3>
   </div>
 
+  <p><b>Current Team</b></p>
   <ul>
     {{#each chosenPlayers}}
       <li>{{name}}</li>
     {{/each}}
   </ul>
 
+  <p><b>Currently Voting:</b></p>
   <ul>
     {{#each players}}
-      <li>{{ name }} - {{ vote }}</li>
+      {{#unless vote}}
+        <li>{{ name }}</li>
+      {{/unless}}
     {{/each}}
   </ul>
 
