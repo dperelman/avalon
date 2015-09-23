@@ -205,6 +205,12 @@ if (Meteor.isClient) {
     }
   });
 
+  Template.player.helpers({
+    isSpy: function () {
+      return (this.team === "spy" ? true : false);
+    }
+  });
+
   Template.votingPhase.helpers({
     chosenPlayers: function () {
       var game = getCurrentGame();
@@ -231,6 +237,21 @@ if (Meteor.isClient) {
     'click .button-reject':function () {
       var player = getCurrentPlayer();
       Players.update(player._id, {$set: {vote: "reject"}});
+    }
+  });
+
+  Template.missionPhase.helpers({
+    acceptVoters: function () {
+      var game = getCurrentGame();
+      if (!game) { return null; }
+      var players = Players.find({'gameID': game._id, 'previousVote': 'accept'}, {'sort': {'createdAt': 1}}).fetch();
+      return players;
+    },
+    rejectVoters: function () {
+      var game = getCurrentGame();
+      if (!game) { return null; }
+      var players = Players.find({'gameID': game._id, 'previousVote': 'reject'}, {'sort': {'createdAt': 1}}).fetch();
+      return players;
     }
   });
 }
@@ -416,11 +437,12 @@ function trackPlayersState() {
 
   if (Session.get("currentView") === "votingPhase" && !!allVoted(players)){
     if (allVoted(players) === "accept"){
-      Games.update(game._id, {$set: {state: "missionPhase"}});
-
+      recordVotes(players);
+      resetVotes(players);
+      Games.update(game._id, {$set: {state: "missionPhase", turn: game.turn + 1}});
     } else {
       resetAll(players);
-      Games.update(game._id, {$set: {state: "pickPhase"}});
+      Games.update(game._id, {$set: {state: "pickPhase", turn: game.turn + 1 }});
     }
   }
 }
@@ -435,6 +457,7 @@ function allReady(players) {
 
   return result;
 }
+
 
 function allVoted(players) {
   var accept = 0;
@@ -458,6 +481,18 @@ function resetAll(players) {
   players.forEach(function (player) {
     Players.update(player._id, { $set: { vote: "" }});
     Players.update(player._id, { $set: { chosen: "" }});
+  });
+}
+
+function recordVotes(players) {
+  players.forEach(function (player) {
+    Players.update(player._id, { $set: { previousVote: player.vote }});
+  });
+}
+
+function resetVotes(players) {
+  players.forEach(function (player) {
+    Players.update(player._id, { $set: { vote: "" }});
   });
 }
 

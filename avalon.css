@@ -73,3 +73,11 @@ input {
 .chosen {
   background-color: #D7E4F3;
 }
+
+.spy {
+  background-color: red;
+}
+
+.ready {
+  background-color: #B6FFC9;
+}

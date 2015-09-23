@@ -91,7 +91,7 @@
     <p><b>Ready up!</b></p>
     <ul>
       {{#each players}}
-        <li>{{name}}: {{ ready }}</li>
+        <li class="{{#if ready}}ready{{/if}}">{{name}}</li>
       {{/each}}
     </ul>
     <button type="submit">Ready</button>
@@ -124,7 +124,7 @@
   </style>
   <div class="pick-phase">
     <h3>Pick Phase</h3>
-    <h2>You are the leader!</h2>
+    <p><b>You are the leader!</b> Tap on the names to choose a team.</p>
     <ul>
       {{#each players}}
         {{> player}}
@@ -175,5 +175,18 @@
   <div class="mission-phase">
     <h3>Mission time!</h3>
 
+    <p><b>Voted to accept:</b></p>
+    <ul>
+      {{#each acceptVoters}}
+        <li>{{name}}</li>
+      {{/each}}
+    </ul>
+
+    <p><b>Voted to reject:</b></p>
+    <ul>
+      {{#each rejectVoters}}
+        <li>{{name}}</li>
+      {{/each}}
+    </ul>
   </div>
 </template>
