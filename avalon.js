@@ -198,6 +198,10 @@ if (Meteor.isClient) {
       if (!game) { return null; }
       var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
       return players;
+    },
+    playerVote: function () {
+      var player = getCurrentPlayer();
+      return player.vote;
     }
   });
 
@@ -393,6 +397,11 @@ function trackPlayersState() {
   if (Session.get("currentView") === "rolePhase" && allReady(players)){
     Games.update(game._id, {$set: {state: 'pickPhase'}});
   }
+
+  if (Session.get("currentView") === "votingPhase" && allVoted(players)){
+    resetAll(players);
+    Games.update(game._id, {$set: {state: "pickPhase"}});
+  }
 }
 
 function allReady(players) {
@@ -404,6 +413,24 @@ function allReady(players) {
   });
 
   return result;
+}
+
+function allVoted(players) {
+  result = true;
+  players.forEach(function (player) {
+    if (!player.vote){
+      result = false;
+    }
+  });
+
+  return result;
+}
+
+function resetAll(players) {
+  players.forEach(function (player) {
+    Players.update(player._id, { $set: { vote: "" }});
+    Players.update(player._id, { $set: { chosen: "" }});
+  });
 }
 
 function updateLeader(leader, players) {

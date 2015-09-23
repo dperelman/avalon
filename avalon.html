@@ -142,6 +142,10 @@
     {{/each}}
   </ul>
 
+  {{#if playerVote}}
+    <p>You are voting: {{ playerVote }}</p>
+  {{/if}}
+
   <div class="button-container">
     <button class="button-accept">Accept</button>
     <button class="button-reject">Reject</button>
