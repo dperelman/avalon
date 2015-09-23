@@ -7,8 +7,7 @@
 </body>
 
 <template name="main">
-    <h3>What up my glip glops!</h3>
-    <div class="main-content">
+    <div class="container">
       {{> Template.dynamic template=whichView}}
       <hr>
 
@@ -34,9 +33,11 @@
 
     <form class="new-game-form">
       <input class="name-input" type="text" placeholder="Name">
-      <button type="submit" class="button-create">Join</button>
     </form>
-    <button class="button-main-menu">Back</button>
+    <div class="button-container">
+      <button class="button-create">Join</button>
+      <button class="button-main-menu">Back</button>
+    </div>
   </div>
 </template>
 
@@ -47,9 +48,12 @@
     <form class="join-game-form">
       <input class="code-input" type="text" placeholder="Access Code">
       <input class="name-input" type="text" placeholder="Name">
-      <button type="submit" class="button-join">Join</button>
     </form>
-    <button class="button-main-menu">Back</button>
+
+    <div class="button-container">
+      <button type="submit" class="button-join">Join</button>
+      <button class="button-main-menu">Back</button>
+    </div>
   </div>
 </template>
 
@@ -79,7 +83,7 @@
         <li>{{name}}: {{ ready }}</li>
       {{/each}}
     </ul>
-    <button type="submit"></button>
+    <button type="submit">Ready/////////////////////////////////</button>
   </div>
 </template>
 
