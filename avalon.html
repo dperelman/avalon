@@ -126,9 +126,9 @@
   </style>
   <div class="pick-phase">
     <h3>Pick Phase</h3>
-    <p><b>You are the leader!</b> Tap on the names to choose a team.</p>
     {{> voteResults}}
 
+    <p><b>You are the leader!</b> Tap on the names to choose a team.</p>
     <ul>
       {{#each players}}
         {{> player}}
@@ -180,6 +180,19 @@
     <h3>Mission time!</h3>
 
     {{> voteResults}}
+  </div>
+</template>
+
+<template name="missionPhaseChosen">
+  <div class="mission-phase">
+    <h3>Mission time!</h3>
+
+    {{> voteResults}}
+
+    <div class="button-container">
+      <button class="button-pass">Pass</button>
+      <button class="button-fail">Fail</button>
+    </div>
   </div>
 </template>
 

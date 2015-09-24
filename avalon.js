@@ -1,4 +1,5 @@
 Games = new Mongo.Collection("games");
+Rounds = new Mongo.Collection("rounds");
 Players = new Mongo.Collection("players");
 
 if (Meteor.isClient) {
@@ -259,6 +260,17 @@ if (Meteor.isClient) {
       return players;
     }
   });
+
+  Template.missionPhaseChosen.events({
+    'click .button-pass':function () {
+      var player = getCurrentPlayer();
+      Players.update(player._id, {$set: {mission: "pass"}});
+    },
+    'click .button-fail':function () {
+      var player = getCurrentPlayer();
+      Players.update(player._id, {$set: {mission: "fail"}});
+    }
+  });
 }
 
 if (Meteor.isServer) {
@@ -284,6 +296,7 @@ function generateNewGame() {
     numPlayers: 0,
     state: "lobby",
     turn: 0,
+    round: 1,
   };
 
   var gameID = Games.insert(game);
@@ -428,7 +441,11 @@ function trackGameState() {
       Session.set("currentView", "pickPhase");
     }
   } else if (game.state === "missionPhase") {
-    Session.set("currentView", "missionPhase");
+    if (player.chosen) {
+      Session.set("currentView", "missionPhaseChosen");
+    } else {
+      Session.set("currentView", "missionPhase");
+    }
   }
 }
 
@@ -450,6 +467,10 @@ function trackPlayersState() {
       resetAll(players);
       Games.update(game._id, {$set: {state: "pickPhase", turn: game.turn + 1 }});
     }
+  }
+  if (Session.get("currentView") === "missionPhase" && !!missionFinished(players)){
+    handleMissionResult(missionFinished(players));
+    resetAll();
   }
 }
 
@@ -487,6 +508,7 @@ function resetAll(players) {
   players.forEach(function (player) {
     Players.update(player._id, { $set: { vote: "" }});
     Players.update(player._id, { $set: { chosen: "" }});
+    Players.update(player._id, { $set: { mission: "" }});
   });
 }
 
@@ -508,4 +530,82 @@ function updateLeader(leader, players) {
   });
 
   Players.update(leader._id, {$set: {leader: true}});
+}
+
+function missionFinished(players) {
+  var game = getCurrentGame();
+  var pass = 0;
+  var fail = 0;
+
+  players.forEach(function (player) {
+    if (player.mission === "fail"){
+      fail ++;
+    } else if (player.mission === "pass"){
+      pass ++;
+    }
+  });
+
+  if (missionNumPlayers(game.round, game.numPlayers)[0] > (pass + fail)) {
+    return false;
+  } else {
+    return ( pass > fail ? "pass" : "fail");
+  }
+}
+
+function missionNumPlayers(roundNum, numPlayers) {
+  switch (numPlayers) {
+    case 5:
+      switch(roundNum) {
+        case 1: return [2, 1];
+        case 2: return [3, 1];
+        case 3: return [2, 1];
+        case 4: return [3, 1];
+        case 5: return [3, 1];
+      }
+      break;
+    case 6:
+      switch(roundNum) {
+        case 1: return [2, 1];
+        case 2: return [3, 1];
+        case 3: return [4, 1];
+        case 4: return [3, 1];
+        case 5: return [4, 1];
+      }
+      break;
+    case 7:
+      switch(roundNum) {
+        case 1: return [2, 1];
+        case 2: return [3, 1];
+        case 3: return [3, 1];
+        case 4: return [4, 2];
+        case 5: return [4, 1];
+      }
+      break;
+    default:
+      switch(roundNum) {
+        case 1: return [3, 1];
+        case 2: return [4, 1];
+        case 3: return [4, 1];
+        case 4: return [5, 2];
+        case 5: return [5, 1];
+      }
+      break;
+  }
+}
+
+function handleMissionResult(result) {
+  var game = getCurrentGame();
+  newRound(game, result);
+  Games.update(game._id, {$set: {state: "pickPhase", round: game.round + 1 }});
+}
+
+
+function newRound(game, result) {
+  var round = {
+    gameID: game._id,
+    number: game.round,
+    result: result,
+  };
+
+  Rounds.insert(round);
 }
