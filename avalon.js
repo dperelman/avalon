@@ -202,7 +202,15 @@ if (Meteor.isClient) {
 
   Template.player.events({
     'click .player':function () {
-      Players.update(this._id, {$set: {chosen: ! this.chosen}});
+      var game = getCurrentGame();
+      var numChosen = Players.find({'gameID': game._id, 'chosen': true}).count();
+      var roundMax = missionNumPlayers(game.round, game.numPlayers)[0];
+
+      if (numChosen < roundMax) {
+        Players.update(this._id, {$set: {chosen: ! this.chosen}});
+      } else if(this.chosen) {
+        Players.update(this._id, {$set: {chosen: false}});
+      }
     }
   });
 
@@ -470,7 +478,7 @@ function trackPlayersState() {
   }
   if (Session.get("currentView") === "missionPhase" && !!missionFinished(players)){
     handleMissionResult(missionFinished(players));
-    resetAll();
+    resetAll(players);
   }
 }
 
@@ -536,6 +544,7 @@ function missionFinished(players) {
   var game = getCurrentGame();
   var pass = 0;
   var fail = 0;
+  var numToFail = missionNumPlayers(game.round, game.numPlayers)[1];
 
   players.forEach(function (player) {
     if (player.mission === "fail"){
@@ -548,7 +557,7 @@ function missionFinished(players) {
   if (missionNumPlayers(game.round, game.numPlayers)[0] > (pass + fail)) {
     return false;
   } else {
-    return ( pass > fail ? "pass" : "fail");
+    return ( fail >= numToFail ? "fail" : "pass");
   }
 }
 
