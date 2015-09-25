@@ -104,16 +104,18 @@ if (Meteor.isClient) {
 
   Template.lobby.events({
     "click .button-start":function () {
-
       var game = getCurrentGame();
       var players = Players.find({'gameID': game._id});
 
-      if (players.count < 3) {
+      if (players.count() < 5) {
         return false;
       }
 
       assignTeams(players);
       Games.update(game._id, {$set: {state: 'rolePhase'}});
+    },
+    "click .button-leave":function () {
+
     }
   });
 
@@ -139,6 +141,7 @@ if (Meteor.isClient) {
     missionNum: function (object) {
       var game = getCurrentGame();
       var numPlayers = missionNumPlayers(object.hash.round, game.numPlayers);
+      if (!numPlayers) {return null;}
       if (numPlayers[1] === 2) {
         return numPlayers[0] + "*";
       } else {

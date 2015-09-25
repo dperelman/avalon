@@ -104,9 +104,14 @@ input {
 }
 
 .pass {
-  background-color: blue;
+  background-color: #26B2F5;
+}
+
+.pass p,
+.fail p {
+  color: white;
 }
 
 .fail {
-  background-color: red;
+  background-color: #FB6C6C;
 }
