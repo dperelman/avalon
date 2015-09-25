@@ -132,6 +132,21 @@ if (Meteor.isClient) {
     }
   });
 
+  Template.score.helpers({
+    game: function () {
+      return getCurrentGame();
+    },
+    missionNum: function (object) {
+      var game = getCurrentGame();
+      var numPlayers = missionNumPlayers(object.hash.round, game.numPlayers);
+      if (numPlayers[1] === 2) {
+        return numPlayers[0] + "*";
+      } else {
+        return numPlayers[0];
+      }
+    },
+  });
+
   Template.rolePhase.events({
     'click button': function () {
       var player = getCurrentPlayer();
@@ -343,6 +358,8 @@ function getCurrentGame() {
   if (gameID) {
     return Games.findOne(gameID);
   }
+
+  return null;
 }
 
 function getCurrentPlayer() {
@@ -562,8 +579,8 @@ function missionFinished(players) {
 }
 
 function missionNumPlayers(roundNum, numPlayers) {
-  switch (numPlayers) {
-    case 5:
+  switch (true) {
+    case numPlayers == 5:
       switch(roundNum) {
         case 1: return [2, 1];
         case 2: return [3, 1];
@@ -572,7 +589,7 @@ function missionNumPlayers(roundNum, numPlayers) {
         case 5: return [3, 1];
       }
       break;
-    case 6:
+    case numPlayers == 6:
       switch(roundNum) {
         case 1: return [2, 1];
         case 2: return [3, 1];
@@ -581,7 +598,7 @@ function missionNumPlayers(roundNum, numPlayers) {
         case 5: return [4, 1];
       }
       break;
-    case 7:
+    case numPlayers == 7:
       switch(roundNum) {
         case 1: return [2, 1];
         case 2: return [3, 1];
@@ -590,7 +607,7 @@ function missionNumPlayers(roundNum, numPlayers) {
         case 5: return [4, 1];
       }
       break;
-    default:
+    case numPlayers > 7 && numPlayers < 11:
       switch(roundNum) {
         case 1: return [3, 1];
         case 2: return [4, 1];
@@ -599,6 +616,8 @@ function missionNumPlayers(roundNum, numPlayers) {
         case 5: return [5, 1];
       }
       break;
+    default:
+      return null;
   }
 }
 

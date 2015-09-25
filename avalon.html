@@ -7,12 +7,25 @@
 </body>
 
 <template name="main">
-    <div class="container">
-      {{> Template.dynamic template=whichView}}
-      <hr>
+  <div class="container">
+    {{> score}}
+    {{> Template.dynamic template=whichView}}
+    <hr>
 
-      <!-- {{> footer }} -->
+    <!-- {{> footer }} -->
+  </div>
+</template>
+
+<template name="score">
+  {{#if game}}
+    <div class="score">
+      <div class="score-box">{{missionNum round=1}}</div>
+      <div class="score-box">{{missionNum round=2}}</div>
+      <div class="score-box">{{missionNum round=3}}</div>
+      <div class="score-box">{{missionNum round=4}}</div>
+      <div class="score-box">{{missionNum round=5}}</div>
     </div>
+  {{/if}}
 </template>
 
 <template name="startMenu">
@@ -102,7 +115,7 @@
   <style media="screen">
     {{#if chosen}}
       .container {
-        background-color: blue;
+        background-color: #D7E4F3;
       }
     {{/if}}
   </style>
