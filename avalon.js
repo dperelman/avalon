@@ -145,6 +145,17 @@ if (Meteor.isClient) {
         return numPlayers[0];
       }
     },
+    roundFinished: function (object) {
+      var game = getCurrentGame();
+      var param = "result" + object.hash.round;
+      if (game[param] === "pass") {
+        return "pass";
+      } else if (game[param] === "fail"){
+        return "fail";
+      } else {
+        return null;
+      }
+    }
   });
 
   Template.rolePhase.events({
@@ -301,6 +312,7 @@ if (Meteor.isServer) {
     // code to run on server at startup
     Games.remove({});
     Players.remove({});
+    Rounds.remove({});
   });
 
   Meteor.publish('games', function(accessCode) {
@@ -623,17 +635,9 @@ function missionNumPlayers(roundNum, numPlayers) {
 
 function handleMissionResult(result) {
   var game = getCurrentGame();
-  newRound(game, result);
-  Games.update(game._id, {$set: {state: "pickPhase", round: game.round + 1 }});
-}
-
-
-function newRound(game, result) {
-  var round = {
-    gameID: game._id,
-    number: game.round,
-    result: result,
-  };
-
-  Rounds.insert(round);
+  var param = "result" + game.round;
+  var query = {};
+  query[param] = result;
+  Games.update(game._id, {$set: {state: "pickPhase", round: game.round + 1, prevResult: result}});
+  Games.update(game._id, {$set: query});
 }

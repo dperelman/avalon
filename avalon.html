@@ -19,11 +19,11 @@
 <template name="score">
   {{#if game}}
     <div class="score">
-      <div class="score-box">{{missionNum round=1}}</div>
-      <div class="score-box">{{missionNum round=2}}</div>
-      <div class="score-box">{{missionNum round=3}}</div>
-      <div class="score-box">{{missionNum round=4}}</div>
-      <div class="score-box">{{missionNum round=5}}</div>
+      <div class="score-box {{#if roundFinished round=1}}{{roundFinished round=1}}{{/if}}"><p>{{missionNum round=1}}</p></div>
+      <div class="score-box {{#if roundFinished round=2}}{{roundFinished round=2}}{{/if}}"><p>{{missionNum round=2}}</p></div>
+      <div class="score-box {{#if roundFinished round=3}}{{roundFinished round=3}}{{/if}}"><p>{{missionNum round=3}}</p></div>
+      <div class="score-box {{#if roundFinished round=4}}{{roundFinished round=4}}{{/if}}"><p>{{missionNum round=4}}</p></div>
+      <div class="score-box {{#if roundFinished round=5}}{{roundFinished round=5}}{{/if}}"><p>{{missionNum round=5}}</p></div>
     </div>
   {{/if}}
 </template>

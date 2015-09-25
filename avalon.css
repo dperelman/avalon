@@ -87,9 +87,26 @@ input {
 }
 
 .score-box {
+  display: flex;
   margin: 5px;
   background-color: #eee;
   height: 20px;
   width: 20%;
   border-radius: 4px;
+  align-content: center;
+}
+
+.score-box > p {
+  color: #aaa;
+  height: .5em;
+  margin: auto;
+  font-size: 12px;
+}
+
+.pass {
+  background-color: blue;
+}
+
+.fail {
+  background-color: red;
 }
