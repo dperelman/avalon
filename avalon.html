@@ -147,7 +147,7 @@
         {{> player}}
       {{/each}}
     </ul>
-    <button>Submit</button>
+    <button class="{{#if pickMax}}ready{{/if}}">Submit</button>
   </div>
 </template>
 
@@ -227,4 +227,12 @@
       {{/each}}
     </ul>
   {{/if}}
+</template>
+
+<template name="gameOver">
+  <div class="gameOver">
+    <p>
+      GameOver
+    </p>
+  </div>
 </template>

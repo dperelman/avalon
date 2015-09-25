@@ -59,6 +59,10 @@ button {
   margin: 1em;
 }
 
+button.ready {
+  background-color: #D7E4F3;
+}
+
 form {
   display: flex;
   flex-direction: column;

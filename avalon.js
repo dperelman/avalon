@@ -202,7 +202,11 @@ if (Meteor.isClient) {
   Template.pickPhaseLeader.events({
     'click button':function () {
       var game = getCurrentGame();
-      Games.update(game._id, {$set: {state: "votingPhase"}});
+      var numChosen = Players.find({'gameID': game._id, 'chosen': true}).count();
+      var roundMax = missionNumPlayers(game.round, game.numPlayers)[0];
+      if (numChosen == roundMax) {
+        Games.update(game._id, {$set: {state: "votingPhase"}});
+      }
     }
   });
 
@@ -212,6 +216,12 @@ if (Meteor.isClient) {
       if (!game) { return null; }
       var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
       return players;
+    },
+    pickMax: function () {
+      var game = getCurrentGame();
+      var numChosen = Players.find({'gameID': game._id, 'chosen': true}).count();
+      var roundMax = missionNumPlayers(game.round, game.numPlayers)[0];
+      return numChosen == roundMax;
     }
   });
 
@@ -487,6 +497,11 @@ function trackGameState() {
       Session.set("currentView", "missionPhase");
     }
   }
+
+  if(game.result5){
+    Session.set("currentView", "gameOver");
+  }
+
 }
 
 function trackPlayersState() {
