@@ -115,7 +115,10 @@ if (Meteor.isClient) {
       Games.update(game._id, {$set: {state: 'rolePhase'}});
     },
     "click .button-leave":function () {
-
+      var player = getCurrentPlayer();
+      Session.set("currentView", "startMenu");
+      Players.remove(player._id);
+      Session.set("playerID", null);
     }
   });
 
