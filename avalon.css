@@ -1,6 +1,6 @@
 /* CSS declarations go here */
 body {
-  font-family: sans-serif;
+  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background-attachment: fixed;
 
   position: absolute;
@@ -14,11 +14,32 @@ body {
   font-size: 14px;
 }
 
+h2 {
+  text-align: center;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #222;
+}
+
+p.small {
+  text-align: center;
+  font-size: 12px;
+  color: darkgrey;
+}
+
+p a {
+  color: darkgrey;
+}
+
 .container {
-  max-width: 600px;
-  margin: 0 auto;
-  min-height: 100%;
+  max-width: 500px;
+  margin: 25% auto 0 auto;
   background: white;
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: 100%;
+  }
 }
 
 h1 {

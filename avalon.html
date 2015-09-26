@@ -1,4 +1,5 @@
 <head>
+  <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
   <title>Avalon</title>
 </head>
 
@@ -12,8 +13,12 @@
     {{> Template.dynamic template=whichView}}
     <hr>
 
-    <!-- {{> footer }} -->
+    {{> footer}}
   </div>
+</template>
+
+<template name="footer">
+  <p class="small"><a href="https://boardgamegeek.com/boardgame/41114/resistance">The Resistance</a> was designed by Don Eskridge</p>
 </template>
 
 <template name="score">
@@ -30,7 +35,7 @@
 
 <template name="startMenu">
   <div class="main-menu">
-    <h3>Welcome to Avalon</h3>
+    <h2>Welcome to Avalon</h2>
 
     <div class="button-container">
       <button class="button-new-game">New Game</button>
