@@ -202,7 +202,7 @@
 
 <template name="missionPhase">
   <div class="mission-phase">
-    <h2>Mission time!</h2>
+    <h2>Mission Phase</h2>
 
     {{> voteResults}}
   </div>
@@ -229,7 +229,7 @@
   {{/if}}
 
   {{#if exists}}
-    <span id="voteHeader"><h3>Previous Vote Results</h3>(tap to show/hide results)</span>
+    <span id="voteHeader"><h2>Previous Vote Results</h2>(tap to show/hide results)</span>
 
     <div id="voteResults">
       <div class="voteContainer">
@@ -245,6 +245,8 @@
             </ul>
           </div>
         </div>
+
+        <hr>
 
         <div class="voteSubContainer">
           <div>
