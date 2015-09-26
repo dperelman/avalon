@@ -1,0 +1,131 @@
+/* CSS declarations go here */
+body {
+  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+h2 {
+  text-align: center;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #222;
+}
+
+p.small {
+  text-align: center;
+  font-size: 12px;
+  color: darkgrey;
+}
+
+p a {
+  color: darkgrey;
+}
+
+.container {
+  max-width: 500px;
+  margin: 25% auto 0 auto;
+  background: white;
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: 100%;
+  }
+}
+
+h1 {
+  font-size: 1.5em;
+  margin: 0;
+  margin-bottom: 10px;
+  display: inline-block;
+  margin-right: 1em;
+}
+
+li {
+  position: relative;
+  list-style: none;
+  padding: 15px;
+  border-bottom: #eee solid 1px;
+}
+
+.button-container {
+  display: flex;
+}
+
+button {
+  width: 100%;
+  background-color: white;
+  border-radius: 4px;
+  color: #555;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #bbb;
+  height: 38px;
+  line-height: 38px;
+  padding: 0 30px;
+  letter-spacing: .1rem;
+  text-transform: uppercase;
+  box-sizing: border-box;
+  margin: 1em;
+}
+
+button.ready {
+  background-color: #D7E4F3;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input {
+  margin: 1em;
+  height: 40px;
+  font-size: 20px;
+}
+
+.chosen {
+  background-color: #D7E4F3;
+}
+
+.spy {
+  background-color: red;
+}
+
+.ready {
+  background-color: #B6FFC9;
+}
+
+.score {
+  display: flex;
+}
+
+.score-box {
+  display: flex;
+  margin: 5px;
+  background-color: #eee;
+  height: 20px;
+  width: 20%;
+  border-radius: 4px;
+  align-content: center;
+}
+
+.score-box > p {
+  color: #aaa;
+  height: .5em;
+  margin: auto;
+  font-size: 12px;
+}
+
+.pass {
+  background-color: #26B2F5;
+}
+
+.pass p,
+.fail p {
+  color: white;
+}
+
+.fail {
+  background-color: #FB6C6C;
+}
