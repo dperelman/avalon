@@ -108,6 +108,14 @@ if (Meteor.isClient) {
       var players = Players.find({'gameID': game._id});
 
       if (players.count() < 5) {
+        $('.player-alert-5').show();
+        $('.player-alert-10').hide();
+        return false;
+      }
+
+      if (players.count() > 10) {
+        $('.player-alert-10').show();
+        $('.player-alert-5').hide();
         return false;
       }
 

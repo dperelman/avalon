@@ -6,6 +6,10 @@ body {
   color: #222;
 }
 
+p {
+  margin: 0;
+}
+
 h2 {
   margin: 0;
   font-size: 24px;
@@ -118,6 +122,7 @@ input {
   color: #aaa;
   height: .5em;
   margin: auto;
+  margin-bottom: 13px;
   font-size: 12px;
 }
 
@@ -135,5 +140,35 @@ input {
 }
 
 #voteResults {
+  display: none;
+}
+
+.voteContainer {
+  margin-top: 20px;
+}
+
+.voteContainer,
+.voters {
+  flex-direction: column;
+}
+
+.voteSubContainer,
+.voteContainer,
+.voters {
+  display: flex;
+}
+
+li.voter {
+  padding: 0;
+  border: 0;
+}
+
+.voteSubContainer > div {
+  width: 50%;
+}
+
+.player-alert-5,
+.player-alert-10 {
+  color: #D25959;
   display: none;
 }

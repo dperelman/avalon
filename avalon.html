@@ -26,6 +26,7 @@
 
 <template name="footer">
   <p class="small"><a href="https://boardgamegeek.com/boardgame/41114/resistance">The Resistance</a> was designed by Don Eskridge</p>
+  <p class="small">Built by <a href="http//alantran.co">Alan Tran</a></p>
 
 </template>
 
@@ -44,7 +45,7 @@
 <template name="startMenu">
   <div class="main-menu">
     <h2>Welcome to the Resistance</h2>
-
+    <br>
     <div class="button-container">
       <button class="button-new-game">New Game</button>
       <button class="button-join-game">Join Game</button>
@@ -55,7 +56,7 @@
 
 <template name="newGame">
   <div class="new-game">
-    <h3>New Game</h3>
+    <h2>New Game</h2>
 
     <form class="new-game-form">
       <input class="name-input" type="text" placeholder="Name">
@@ -69,7 +70,7 @@
 
 <template name="joinGame">
   <div class="join-game">
-    <h3>Join Game</h3>
+    <h2>Join Game</h2>
 
     <form class="join-game-form">
       <input class="code-input" type="text" placeholder="Access Code">
@@ -86,7 +87,7 @@
 
 <template name="lobby">
   <div class="lobby">
-    <h3>Lobby</h3>
+    <h2>Lobby</h2>
     <p>Access Code: {{code}}</p>
     <ul>
       {{#each players}}
@@ -98,20 +99,22 @@
       <button class="button-start">Start</button>
       <button class="button-leave">Leave</button>
     </div>
+    <p class="player-alert-5">You must have at least 5 players to play!</p>
+    <p class="player-alert-10">You can't have more than 10 players to play!</p>
   </div>
 </template>
 
 <template name="rolePhase">
   <div class="role-phase">
-    <h3>Role Phase</h3>
+    <h2>Role Phase</h2>
     <p>Your team: {{player.team}}</p>
 
     {{#if isSpy}}
-    <ul>
+    <p> Also on your team:
       {{#each allSpies}}
-        <li>{{name}}</li>
+        <b>{{name}} </b>
       {{/each}}
-    </ul>
+    </p>
     {{/if}}
 
     <p><b>Ready up!</b></p>
@@ -128,7 +131,7 @@
   <style media="screen">
   </style>
   <div class="pick-phase">
-    <h3>Pick Phase</h3>
+    <h2>Pick Phase</h2>
     {{> voteResults}}
 
     {{#if chosenPlayers}}
@@ -154,7 +157,7 @@
     {{/if}}
   </style>
   <div class="pick-phase">
-    <h3>Pick Phase</h3>
+    <h2>Pick Phase</h2>
     {{> voteResults}}
 
     <p><b>You are the leader!</b> Tap on the names to choose a team.</p>
@@ -175,7 +178,7 @@
 
 <template name="votingPhase">
   <div class="voting-phase">
-    <h3>Voting Phase</h3>
+    <h2>Voting Phase</h2>
   </div>
 
   <p><b>Current Team</b></p>
@@ -199,7 +202,7 @@
 
 <template name="missionPhase">
   <div class="mission-phase">
-    <h3>Mission time!</h3>
+    <h2>Mission time!</h2>
 
     {{> voteResults}}
   </div>
@@ -207,7 +210,7 @@
 
 <template name="missionPhaseChosen">
   <div class="mission-phase">
-    <h3>Mission time!</h3>
+    <h2>Mission Phase</h2>
 
     {{> voteResults}}
 
@@ -229,19 +232,33 @@
     <span id="voteHeader"><h2>Previous Vote Results</h2>(tap to show/hide results)</span>
 
     <div id="voteResults">
-      <p><b>Voted to accept:</b></p>
-      <ul>
-        {{#each acceptVoters}}
-          <li>{{name}}</li>
-        {{/each}}
-      </ul>
+      <div class="voteContainer">
+        <div class="voteSubContainer">
+          <div>
+            <p><b>Voted to accept:</b></p>
+          </div>
+          <div class="voters">
+            <ul>
+              {{#each acceptVoters}}
+                <li class="voter">{{name}}</li>
+              {{/each}}
+            </ul>
+          </div>
+        </div>
 
-      <p><b>Voted to reject:</b></p>
-      <ul>
-        {{#each rejectVoters}}
-          <li>{{name}}</li>
-        {{/each}}
-      </ul>
+        <div class="voteSubContainer">
+          <div>
+            <p><b>Voted to reject:</b></p>
+          </div>
+          <div class="voters">
+            <ul>
+              {{#each rejectVoters}}
+                <li class="voter">{{name}}</li>
+              {{/each}}
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   {{/if}}
 
