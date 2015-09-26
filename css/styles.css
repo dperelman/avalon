@@ -1,12 +1,14 @@
 /* CSS declarations go here */
 body {
+  text-align: center;
   font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #222;
 }
 
 h2 {
   text-align: center;
   font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #222;
 }
 
 p.small {
