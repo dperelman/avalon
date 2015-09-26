@@ -4,6 +4,7 @@
   <link rel="stylesheet" href="css/normalize.css" type="text/css">
   <link rel="stylesheet" href="css/skeleton.css" type="text/css">
   <link rel="stylesheet" href="css/styles.css" type="text/css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 
   <title>Resistance</title>
 </head>
@@ -25,6 +26,7 @@
 
 <template name="footer">
   <p class="small"><a href="https://boardgamegeek.com/boardgame/41114/resistance">The Resistance</a> was designed by Don Eskridge</p>
+
 </template>
 
 <template name="score">
@@ -222,22 +224,32 @@
 
 <template name="voteResults">
   {{#if exists}}
-    <h3>Previous Vote Results</h3>
+    <span id="voteHeader"><h2>Previous Vote Results</h2><p>(tap to toggle results)</p></span>
 
-    <p><b>Voted to accept:</b></p>
-    <ul>
-      {{#each acceptVoters}}
-        <li>{{name}}</li>
-      {{/each}}
-    </ul>
+    <div id="voteResults">
+      <p><b>Voted to accept:</b></p>
+      <ul>
+        {{#each acceptVoters}}
+          <li>{{name}}</li>
+        {{/each}}
+      </ul>
 
-    <p><b>Voted to reject:</b></p>
-    <ul>
-      {{#each rejectVoters}}
-        <li>{{name}}</li>
-      {{/each}}
-    </ul>
+      <p><b>Voted to reject:</b></p>
+      <ul>
+        {{#each rejectVoters}}
+          <li>{{name}}</li>
+        {{/each}}
+      </ul>
+    </div>
   {{/if}}
+
+  <script>
+  $(document).ready(function () {
+    $('#voteHeader').click(function () {
+      $('#voteResults').toggle();
+    })
+  })
+  </script>
 </template>
 
 <template name="gameOver">
