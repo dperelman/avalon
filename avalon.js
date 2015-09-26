@@ -238,6 +238,7 @@ if (Meteor.isClient) {
     chosenPlayers:function () {
       var game = getCurrentGame();
       var players = Players.find({'gameID': game._id, 'chosen': true}, {'sort': {'createdAt': 1}}).fetch();
+      if (!players) { return null; }
       return players;
     }
   });
@@ -268,11 +269,11 @@ if (Meteor.isClient) {
       var players = Players.find({'gameID': game._id, 'chosen': true}, {'sort': {'createdAt': 1}}).fetch();
       return players;
     },
-    players: function () {
+    playersCount: function () {
       var game = getCurrentGame();
       if (!game) { return null; }
-      var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
-      return players;
+      var players = Players.find({ $and: [{vote: {$ne: "accept"}}, {vote: {$ne: "reject"}} ]}).fetch();
+      return players.length;
     },
     playerVote: function () {
       var player = getCurrentPlayer();
@@ -308,6 +309,29 @@ if (Meteor.isClient) {
       if (!game) { return null; }
       var players = Players.find({'gameID': game._id, 'previousVote': 'reject'}, {'sort': {'createdAt': 1}}).fetch();
       return players;
+    },
+    numSabotaged: function () {
+      var game = getCurrentGame();
+      if (!game) {return null; }
+      if (game.prevResult[1] < 1) {
+        return null;
+      } else {
+        if (game.prevResult[1] == 1) {
+          return "1 spy";
+        } else {
+          return game.prevResult[1] + " spies";
+        }
+      }
+    },
+    missionResult: function () {
+      var game = getCurrentGame();
+      if (!game) {return null; }
+      return (game.prevResult[0] === "fail" ? "failed" : "succeeded");
+    },
+    missionExists: function () {
+      var game = getCurrentGame();
+      if (!game) {return null;}
+      return game.prevResult;
     }
   });
 
@@ -607,7 +631,7 @@ function missionFinished(players) {
   if (missionNumPlayers(game.round, game.numPlayers)[0] > (pass + fail)) {
     return false;
   } else {
-    return ( fail >= numToFail ? "fail" : "pass");
+    return ( fail >= numToFail ? fail : "pass");
   }
 }
 
@@ -658,7 +682,12 @@ function handleMissionResult(result) {
   var game = getCurrentGame();
   var param = "result" + game.round;
   var query = {};
-  query[param] = result;
+  if (result == "pass") {
+    result = ["pass", null];
+  } else {
+    result = ["fail", result];
+  }
+  query[param] = result[0];
   Games.update(game._id, {$set: {state: "pickPhase", round: game.round + 1, prevResult: result}});
   Games.update(game._id, {$set: query});
 }

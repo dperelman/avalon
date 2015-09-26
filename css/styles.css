@@ -7,7 +7,8 @@ body {
 }
 
 h2 {
-  font-size: 28px;
+  margin: 0;
+  font-size: 24px;
   text-align: center;
   font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -73,7 +74,7 @@ button {
 }
 
 button.ready {
-  background-color: #D7E4F3;
+  background-color: #eee;
 }
 
 form {
@@ -131,4 +132,8 @@ input {
 
 .fail {
   background-color: #FB6C6C;
+}
+
+#voteResults {
+  display: none;
 }

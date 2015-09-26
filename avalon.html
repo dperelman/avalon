@@ -126,19 +126,22 @@
 
 <template name="pickPhase">
   <style media="screen">
-    {{#if chosen}}
-      .container {
-        background-color: #D7E4F3;
-      }
-    {{/if}}
   </style>
   <div class="pick-phase">
     <h3>Pick Phase</h3>
     {{> voteResults}}
 
-    {{#each chosenPlayers}}
-      <li>{{name}}</li>
-    {{/each}}
+    {{#if chosenPlayers}}
+      <p>Your leader has chosen: </p>
+      {{#each chosenPlayers}}
+        <li>{{name}}</li>
+      {{/each}}
+    {{/if}}
+    {{#if chosen}}
+      <p>You have been chosen!</p>
+    {{else}}
+      <p>Please wait while your leader chooses a team.</p>
+    {{/if}}
   </div>
 </template>
 
@@ -182,14 +185,7 @@
     {{/each}}
   </ul>
 
-  <p><b>Currently Voting:</b></p>
-  <ul>
-    {{#each players}}
-      {{#unless vote}}
-        <li>{{ name }}</li>
-      {{/unless}}
-    {{/each}}
-  </ul>
+  <p><b>Waiting for {{ playersCount }} people to vote.</b></p>
 
   {{#if playerVote}}
     <p>You are voting: {{ playerVote }}</p>
@@ -223,8 +219,14 @@
 </template>
 
 <template name="voteResults">
+  {{#if missionExists}}
+      <p>
+        The previous mission {{missionResult}}. {{#if numSabotaged}} {{numSabotaged}} sabotaged the mission. {{/if}}
+      </p>
+  {{/if}}
+
   {{#if exists}}
-    <span id="voteHeader"><h2>Previous Vote Results</h2><p>(tap to toggle results)</p></span>
+    <span id="voteHeader"><h2>Previous Vote Results</h2>(tap to show/hide results)</span>
 
     <div id="voteResults">
       <p><b>Voted to accept:</b></p>
