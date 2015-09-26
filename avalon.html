@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="css/skeleton.css" type="text/css">
   <link rel="stylesheet" href="css/styles.css" type="text/css">
 
-  <title>Avalon</title>
+  <title>Resistance</title>
 </head>
 
 <body>
@@ -15,6 +15,7 @@
 <template name="main">
   <div class="container">
     {{> score}}
+    <br>
     {{> Template.dynamic template=whichView}}
     <hr>
 
@@ -40,7 +41,7 @@
 
 <template name="startMenu">
   <div class="main-menu">
-    <h2>Welcome to Avalon</h2>
+    <h2>Welcome to the Resistance</h2>
 
     <div class="button-container">
       <button class="button-new-game">New Game</button>
