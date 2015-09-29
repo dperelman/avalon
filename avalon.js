@@ -127,6 +127,22 @@ if (Meteor.isClient) {
       Session.set("currentView", "startMenu");
       Players.remove(player._id);
       Session.set("playerID", null);
+    },
+    "click .merlin":function () {
+      var game = getCurrentGame();
+      Games.update(game._id, {$set: {merlin: ! game.merlin}});
+    },
+    "click .assassin":function () {
+      var game = getCurrentGame();
+      Games.update(game._id, {$set: {assassin: ! game.assassin}});
+    },
+    "click .morgana":function () {
+      var game = getCurrentGame();
+      Games.update(game._id, {$set: {morgana: ! game.morgana}});
+    },
+    "click .percival":function () {
+      var game = getCurrentGame();
+      Games.update(game._id, {$set: {percival: ! game.percival}});
     }
   });
 
@@ -142,6 +158,18 @@ if (Meteor.isClient) {
       if (!game) { return null; }
       var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
       return players;
+    },
+    merlin: function () {
+      return getCurrentGame().merlin;
+    },
+    assassin: function () {
+      return getCurrentGame().assassin;
+    },
+    morgana: function () {
+      return getCurrentGame().morgana;
+    },
+    percival: function () {
+      return getCurrentGame().percival;
     }
   });
 
