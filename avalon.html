@@ -147,6 +147,22 @@
     </p>
     {{/if}}
 
+    {{#if isMerlin}}
+    <p> You are Merlin! The spies are:
+      {{#each allSpies}}
+      <b>{{name}} </b>
+      {{/each}}
+    </p>
+    {{/if}}
+
+    {{#if isPercival}}
+    <p>You are Percival! Merlin is {{merlin}}.</p>
+    {{/if}}
+
+    {{#if isAssassin}}
+    <p>You are the assassin! Try to see if you can spot who the Merlin is. You'll have a chance to identify him at the end of the game to win it.</p>
+    {{/if}}
+
     {{#if role}}
       <p>Your special role: {{role}}</p>
     {{/if}}

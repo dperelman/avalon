@@ -223,8 +223,19 @@ if (Meteor.isClient) {
       return getCurrentPlayer().role;
     },
     isSpy: function () {
-      var player = getCurrentPlayer();
-      return (player.team === "spy" ? true : false);
+      return (getCurrentPlayer().team === "spy" ? true : false);
+    },
+    isMerlin: function () {
+      return (getCurrentPlayer().role === "merlin" ? true : false);
+    },
+    isAssassin: function () {
+      return (getCurrentPlayer().role === "assassin" ? true : false);
+    },
+    isPercival: function () {
+      return (getCurrentPlayer().role === "percival" ? true : false);
+    },
+    merlin: function () {
+      return Players.findOne({'gameID': getCurrentGame()._id, 'role': 'merlin'}).name;
     },
     allSpies: function () {
       var game = getCurrentGame();
