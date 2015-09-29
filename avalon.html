@@ -88,7 +88,20 @@
 <template name="lobby">
   <div class="lobby">
     <h2>Lobby</h2>
-    <p>Access Code: {{code}}</p>
+    <div class="lobby-info">
+      <div class="access-code">
+        <p>Access Code: {{code}}</p>
+      </div>
+      <div class="game-options">
+        <p class="options-header">Options</p>
+        <div class="role-options">
+          <li class="checked"><input type="checkbox" checked="{{merlin}}"><span>Merlin</span></li>
+          <li class="checked"><input type="checkbox" checked="{{assassin}}"><span>Assassin</span></li>
+          <li class="checked"><input type="checkbox" checked="{{morgana}}"><span>Morgana</span></li>
+          <li class="checked"><input type="checkbox" checked="{{percival}}"><span>Percival</span></li>
+        </div>
+      </div>
+    </div>
     <ul>
       {{#each players}}
         <li>{{ name }}</li>
@@ -102,6 +115,14 @@
     <p class="player-alert-5">You must have at least 5 players to play!</p>
     <p class="player-alert-10">You can't have more than 10 players to play!</p>
   </div>
+
+  <script>
+    $(document).ready(function () {
+      $('.options-header').click(function () {
+        $('.role-options').toggle();
+      })
+    })
+  </script>
 </template>
 
 <template name="rolePhase">

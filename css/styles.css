@@ -86,7 +86,7 @@ form {
   flex-direction: column;
 }
 
-input {
+input[type="text"] {
   margin: 1em;
   height: 40px;
   font-size: 20px;
@@ -148,13 +148,18 @@ input {
 }
 
 .voteContainer,
-.voters {
+.voters,
+.game-options,
+.role-options {
   flex-direction: column;
 }
 
 .voteSubContainer,
 .voteContainer,
-.voters {
+.voters,
+.lobby-info,
+.game-options,
+.role-options {
   display: flex;
 }
 
@@ -170,5 +175,25 @@ li.voter {
 .player-alert-5,
 .player-alert-10 {
   color: #D25959;
+  display: none;
+}
+
+.lobby-info > div{
+  width: 50%;
+}
+
+.game-options li {
+  text-align: left;
+  margin: 0;
+  padding: 10px;
+  border-bottom: 0;
+}
+
+input[type="checkbox"] {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.role-options {
   display: none;
 }

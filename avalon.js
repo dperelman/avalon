@@ -253,7 +253,6 @@ if (Meteor.isClient) {
 
   Template.player.events({
     'click .player':function () {
-      debugger;
       var game = getCurrentGame();
       var numChosen = Players.find({'gameID': game._id, 'chosen': true}).count();
       var roundMax = missionNumPlayers(game.round, game.numPlayers)[0];
