@@ -120,6 +120,7 @@ if (Meteor.isClient) {
       }
 
       assignTeams(players);
+      assignSpecialRoles(players, game);
       Games.update(game._id, {$set: {state: 'rolePhase'}});
     },
     "click .button-leave":function () {
@@ -217,6 +218,9 @@ if (Meteor.isClient) {
       if (!game) { return null; }
       var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
       return players;
+    },
+    role: function () {
+      return getCurrentPlayer().role;
     },
     isSpy: function () {
       var player = getCurrentPlayer();
@@ -496,7 +500,7 @@ function assignTeams(players) {
       break;
     case 9:
       teams = ["spy", "spy",  "spy",
-               "resistance", "resistance", "resistance", "resistance", "resistance", "resistance"];
+               "resistance", "resistance", "resistance", "resistance", "res)istance", "resistance"];
       break;
     case 10:
       teams = ["spy", "spy", "spy",  "spy",
@@ -513,6 +517,36 @@ function assignTeams(players) {
   });
 
   return players;
+}
+
+function assignSpecialRoles(players, game) {
+  var goodRoles = [];
+  var evilRoles = [];
+  var goodPlayers = [];
+  var evilPlayers = [];
+
+  if (game.merlin) {goodRoles.push("merlin");}
+  if (game.assassin) {evilRoles.push("assassin");}
+  if (game.morgana) {evilRoles.push("morgana");}
+  if (game.percival) {goodRoles.push("percival");}
+
+  players.forEach(function (player) {
+    if (player.team == "resistance") {
+      goodPlayers.push(player);
+    } else {
+      evilPlayers.push(player);
+    }
+  });
+
+  shuffle(goodPlayers);
+  shuffle(evilPlayers);
+
+  for (var i = 0; i < goodRoles.length; i++) {
+    Players.update(goodPlayers[i]._id, {$set: {role: goodRoles[i] }});
+  }
+  for (var j = 0; j < evilRoles.length; j++) {
+    Players.update(evilPlayers[j]._id, {$set: {role: evilRoles[j] }});
+  }
 }
 
 function trackGameState() {
