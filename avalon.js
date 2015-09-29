@@ -228,12 +228,13 @@ if (Meteor.isClient) {
     },
     allSpies: function () {
       var game = getCurrentGame();
+      var currentPlayer = getCurrentPlayer();
       if (!game) { return null; }
       var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
       var spies = [];
 
       players.forEach(function (player) {
-        if (player.team === "spy") {
+        if (player.team === "spy" && player._id !== currentPlayer._id) {
           spies.push(player);
         }
       });
