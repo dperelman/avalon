@@ -415,6 +415,34 @@ if (Meteor.isClient) {
       Players.update(player._id, {$set: {mission: "fail"}});
     }
   });
+
+  Template.assassinPhase.events({
+    'click .assassinate': function () {
+      debugger;
+    }
+  });
+
+  Template.assassinPhase.helpers({
+    resistanceMembers: function () {
+      return Players.find({'team': 'resistance', 'gameID': getCurrentGame()._id});
+    }
+  });
+
+  Template.assassinPick.events({
+    'click .player': function () {
+      var players = Players.find({'gameID': getCurrentGame()._id});
+      players.forEach(function (player) {
+        Players.update(player._id, {$set: {assassinated: false}});
+      });
+      Players.update(this._id, {$set: {assassinated: true}});
+    }
+  });
+
+  Template.assassinPick.helpers({
+    chosen: function () {
+      return this.assassinated;
+    }
+  });
 }
 
 if (Meteor.isServer) {
@@ -601,6 +629,12 @@ function trackGameState() {
    });
   updateLeader(leader, players);
 
+  if(game.assassin && game.resRoundsWon > 2){
+    Games.update(game._id, {$set: {state: 'assassinPhase'}});
+  } else if (game.resRoundsWon > 2 || game.spyRoundsWon > 2 || game.result5) {
+    Games.update(game._id, {$set: {state: 'gameOver'}});
+  }
+
   if (!game || !player){
     Session.set("gameID", null);
     Session.set("playerID", null);
@@ -627,9 +661,13 @@ function trackGameState() {
     } else {
       Session.set("currentView", "missionPhase");
     }
-  }
-
-  if(game.resRoundsWon > 2 || game.spyRoundsWon > 2 || game.result5){
+  } else if (game.state === "assassinPhase") {
+    if (player.role === "assassin"){
+      Session.set("currentView", "assassinPhase");
+    } else {
+      Session.set("currentView", "assassinPhaseWait");
+    }
+  } else if (game.state === "gameOver") {
     Session.set("currentView", "gameOver");
   }
 

@@ -205,7 +205,7 @@
     <h2>Pick Phase</h2>
     {{#if voteRejected}}
       <p class="red">
-        The previous vote has been rejected. A new leader has been chosen.
+        The previous vote has been rejected. You are now the leader.
       </p>
     {{/if}}
 
@@ -340,6 +340,36 @@
       Game Over
 
       {{voteResults}}
+    </p>
+  </div>
+</template>
+
+<template name="assassinPhase">
+  <div class="assassin-phase">
+    <p>
+      Assassin Phase
+    </p>
+
+    <ul>
+      {{#each resistanceMembers}}
+        {{> assassinPick}}
+      {{/each}}
+    </ul>
+
+    <button type="submit" class="assassinate">Assassinate</button>
+  </div>
+</template>
+
+<template name="assassinPick">
+  <li class=" player {{#if chosen}}chosen{{/if}}">
+    {{name}}
+  </li>
+</template>
+
+<template name="assassinPhaseWait">
+  <div class="assassin-phase">
+    <p>
+      The resistance have won 3 rounds! Please wait while the assassin choses a target.
     </p>
   </div>
 </template>
