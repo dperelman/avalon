@@ -289,6 +289,9 @@ if (Meteor.isClient) {
       var numChosen = Players.find({'gameID': game._id, 'chosen': true}).count();
       var roundMax = missionNumPlayers(game.round, game.numPlayers)[0];
       return numChosen == roundMax;
+    },
+    voteRejected: function () {
+      return getCurrentGame().voteRejected;
     }
   });
 
@@ -304,6 +307,9 @@ if (Meteor.isClient) {
       var players = Players.find({'gameID': game._id, 'chosen': true}, {'sort': {'createdAt': 1}}).fetch();
       if (!players) { return null; }
       return players;
+    },
+    voteRejected: function () {
+      return getCurrentGame().voteRejected;
     }
   });
 
@@ -436,6 +442,8 @@ function generateNewGame() {
     state: "lobby",
     turn: 0,
     round: 1,
+    spyRoundsWon: 0,
+    resRoundsWon: 0
   };
 
   var gameID = Games.insert(game);
@@ -603,6 +611,7 @@ function trackGameState() {
   if(game.state === "rolePhase"){
     Session.set("currentView", "rolePhase");
   } else if (game.state === "votingPhase") {
+    Games.update(game._id, {$set: {prevResult: "", voteRejected: false}});
     Session.set("currentView", 'votingPhase');
   } else if (game.state === "lobby") {
     Session.set("currentView", "lobby");
@@ -620,7 +629,7 @@ function trackGameState() {
     }
   }
 
-  if(game.result5){
+  if(game.resRoundsWon > 2 || game.spyRoundsWon > 2 || game.result5){
     Session.set("currentView", "gameOver");
   }
 
@@ -642,7 +651,7 @@ function trackPlayersState() {
     } else {
       recordVotes(players);
       resetAll(players);
-      Games.update(game._id, {$set: {state: "pickPhase", turn: game.turn + 1 }});
+      Games.update(game._id, {$set: {state: "pickPhase", turn: game.turn + 1, voteRejected: true }});
     }
   }
   if (Session.get("currentView") === "missionPhase" && !!missionFinished(players)){
@@ -779,8 +788,10 @@ function handleMissionResult(result) {
   var query = {};
   if (result == "pass") {
     result = ["pass", null];
+    Games.update(game._id, {$set: {resRoundsWon: game.resRoundsWon + 1}});
   } else {
     result = ["fail", result];
+    Games.update(game._id, {$set: {spyRoundsWon: game.spyRoundsWon + 1}});
   }
   query[param] = result[0];
   Games.update(game._id, {$set: {state: "pickPhase", round: game.round + 1, prevResult: result}});

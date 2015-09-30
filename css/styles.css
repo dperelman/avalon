@@ -139,7 +139,15 @@ input[type="text"] {
   background-color: #FB6C6C;
 }
 
+#voteHeader > h2 {
+  font-size: 18px;
+}
+
 #voteResults {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-radius: 4px;
+  background-color: #eee;
   display: none;
 }
 
@@ -176,6 +184,10 @@ li.voter {
 .player-alert-10 {
   color: #D25959;
   display: none;
+}
+
+.red {
+  color: #D25959;
 }
 
 .lobby-info > div{

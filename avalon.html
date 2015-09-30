@@ -178,6 +178,12 @@
   </style>
   <div class="pick-phase">
     <h2>Pick Phase</h2>
+    {{#if voteRejected}}
+      <p class="red">
+        The previous vote has been rejected. A new leader has been chosen.
+      </p>
+    {{/if}}
+
     {{> voteResults}}
 
     {{#if chosenPlayers}}
@@ -195,15 +201,14 @@
 </template>
 
 <template name="pickPhaseLeader">
-  <style media="screen">
-    {{#if chosen}}
-      body {
-        background-color: blue;
-      }
-    {{/if}}
-  </style>
   <div class="pick-phase">
     <h2>Pick Phase</h2>
+    {{#if voteRejected}}
+      <p class="red">
+        The previous vote has been rejected. A new leader has been chosen.
+      </p>
+    {{/if}}
+
     {{> voteResults}}
 
     <p><b>You are the leader!</b> Tap on the names to choose a team.</p>
@@ -250,6 +255,10 @@
   <div class="mission-phase">
     <h2>Mission Phase</h2>
 
+    <p>
+      The vote has passed. You have not been selected. Please wait.
+    </p>
+
     {{> voteResults}}
   </div>
 </template>
@@ -257,6 +266,10 @@
 <template name="missionPhaseChosen">
   <div class="mission-phase">
     <h2>Mission Phase</h2>
+
+    <p>
+      The vote has passed. You have been chosen to go on the mission.
+    </p>
 
     {{> voteResults}}
 
@@ -269,12 +282,13 @@
 
 <template name="voteResults">
   {{#if missionExists}}
-      <p>
+      <p class="red">
         The previous mission {{missionResult}}. {{#if numSabotaged}} {{numSabotaged}} sabotaged the mission. {{/if}}
       </p>
   {{/if}}
 
   {{#if exists}}
+    <hr>
     <span id="voteHeader"><h2>Previous Vote Results</h2>(tap to show/hide results)</span>
 
     <div id="voteResults">
@@ -308,6 +322,7 @@
         </div>
       </div>
     </div>
+    <hr>
   {{/if}}
 
   <script>
@@ -322,7 +337,9 @@
 <template name="gameOver">
   <div class="gameOver">
     <p>
-      GameOver
+      Game Over
+
+      {{voteResults}}
     </p>
   </div>
 </template>
