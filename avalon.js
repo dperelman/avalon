@@ -234,8 +234,23 @@ if (Meteor.isClient) {
     isPercival: function () {
       return (getCurrentPlayer().role === "percival" ? true : false);
     },
-    merlin: function () {
-      return Players.findOne({'gameID': getCurrentGame()._id, 'role': 'merlin'}).name;
+    possibleMerlins: function () {
+      var result = [];
+      var merlins =  Players.find({
+        $and: [
+          {'gameID': getCurrentGame()._id},
+          {$or :[
+            {'role': 'merlin'},
+            {'role': 'morgana'}
+          ] }
+        ]
+      }, {sort: {'random': 1}});
+
+      merlins.forEach(function (player) {
+        result.push(player.name);
+      });
+
+      return result.join(' or ');
     },
     allSpies: function () {
       var game = getCurrentGame();
@@ -448,7 +463,8 @@ function generateNewPlayer(game, name) {
   var player = {
     gameID: game._id,
     name: name,
-    ord: game.numPlayers
+    ord: game.numPlayers,
+    random: Math.floor(Math.random()*100)
   };
 
   var playerID = Players.insert(player);
