@@ -219,9 +219,6 @@ if (Meteor.isClient) {
       var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
       return players;
     },
-    role: function () {
-      return getCurrentPlayer().role;
-    },
     isSpy: function () {
       return (getCurrentPlayer().team === "spy" ? true : false);
     },

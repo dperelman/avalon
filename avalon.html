@@ -42,11 +42,11 @@
 <template name="score">
   {{#if game}}
     <div class="score">
-      <div class="score-box {{#if roundFinished round=1}}{{roundFinished round=1}}{{/if}}"><p>{{missionNum round=1}}</p></div>
-      <div class="score-box {{#if roundFinished round=2}}{{roundFinished round=2}}{{/if}}"><p>{{missionNum round=2}}</p></div>
-      <div class="score-box {{#if roundFinished round=3}}{{roundFinished round=3}}{{/if}}"><p>{{missionNum round=3}}</p></div>
-      <div class="score-box {{#if roundFinished round=4}}{{roundFinished round=4}}{{/if}}"><p>{{missionNum round=4}}</p></div>
-      <div class="score-box {{#if roundFinished round=5}}{{roundFinished round=5}}{{/if}}"><p>{{missionNum round=5}}</p></div>
+      <div class="score-box {{roundFinished round=1}}"><p>{{missionNum round=1}}</p></div>
+      <div class="score-box {{roundFinished round=2}}"><p>{{missionNum round=2}}</p></div>
+      <div class="score-box {{roundFinished round=3}}"><p>{{missionNum round=3}}</p></div>
+      <div class="score-box {{roundFinished round=4}}"><p>{{missionNum round=4}}</p></div>
+      <div class="score-box {{roundFinished round=5}}"><p>{{missionNum round=5}}</p></div>
     </div>
   {{/if}}
 </template>
@@ -161,10 +161,6 @@
 
     {{#if isAssassin}}
     <p>You are the assassin! Try to see if you can spot who the Merlin is. You'll have a chance to identify him at the end of the game to win it.</p>
-    {{/if}}
-
-    {{#if role}}
-      <p>Your special role: {{role}}</p>
     {{/if}}
 
     <p><b>Ready up!</b></p>
