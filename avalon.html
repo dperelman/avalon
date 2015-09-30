@@ -344,6 +344,20 @@
   </div>
 </template>
 
+<template name="specialGameOver">
+  <div class="gameOver">
+    <p>
+      Game Over
+    </p>
+
+      {{#if resistanceWins}}
+        <p>The assassin guessed incorectly! The resistance wins.</p>
+      {{else}}
+        <p>The assassin guessed correctly! Spies win.</p>
+      {{/if}}
+  </div>
+</template>
+
 <template name="assassinPhase">
   <div class="assassin-phase">
     <p>

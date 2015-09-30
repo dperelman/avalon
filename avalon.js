@@ -124,9 +124,9 @@ if (Meteor.isClient) {
       Games.update(game._id, {$set: {state: 'rolePhase'}});
     },
     "click .button-leave":function () {
-      var player = getCurrentPlayer();
+      Games.update(getCurrentGame()._id, {$set: {numPlayers: game.numPlayers - 1}});
       Session.set("currentView", "startMenu");
-      Players.remove(player._id);
+      Players.remove(getCurrentPlayer()._id);
       Session.set("playerID", null);
     },
     "click .merlin":function () {
@@ -418,7 +418,14 @@ if (Meteor.isClient) {
 
   Template.assassinPhase.events({
     'click .assassinate': function () {
-      debugger;
+      var game = getCurrentGame();
+      var merlin = Players.findOne({'gameID': getCurrentGame()._id, 'role': 'merlin'});
+      var target = Players.findOne({'gameID': getCurrentGame()._id, 'assassinated': true});
+      if (merlin._id === target._id) {
+        Games.update(game._id, {$set: {winner: "spies"}});
+      } else {
+        Games.update(game._id, {$set: {winner: "resistance"}});
+      }
     }
   });
 
@@ -430,10 +437,8 @@ if (Meteor.isClient) {
 
   Template.assassinPick.events({
     'click .player': function () {
-      var players = Players.find({'gameID': getCurrentGame()._id});
-      players.forEach(function (player) {
-        Players.update(player._id, {$set: {assassinated: false}});
-      });
+      var player = Players.findOne({'gameID': getCurrentGame()._id, 'assassinated': true});
+      if (player) { Players.update(player._id, {$set: {assassinated: false}}); }
       Players.update(this._id, {$set: {assassinated: true}});
     }
   });
@@ -441,6 +446,13 @@ if (Meteor.isClient) {
   Template.assassinPick.helpers({
     chosen: function () {
       return this.assassinated;
+    }
+  });
+
+  Template.specialGameOver.helpers({
+    resistanceWins: function () {
+      debugger;
+      return (getCurrentGame().winner === "resistance");
     }
   });
 }
@@ -629,11 +641,6 @@ function trackGameState() {
    });
   updateLeader(leader, players);
 
-  if(game.assassin && game.resRoundsWon > 2){
-    Games.update(game._id, {$set: {state: 'assassinPhase'}});
-  } else if (game.resRoundsWon > 2 || game.spyRoundsWon > 2 || game.result5) {
-    Games.update(game._id, {$set: {state: 'gameOver'}});
-  }
 
   if (!game || !player){
     Session.set("gameID", null);
@@ -671,6 +678,13 @@ function trackGameState() {
     Session.set("currentView", "gameOver");
   }
 
+  if(!game.winner && game.assassin && game.resRoundsWon > 2){
+    Games.update(game._id, {$set: {state: 'assassinPhase'}});
+  } else if (!!game.winner) {
+    Session.set("currentView", "specialGameOver");
+  } else if (game.resRoundsWon > 2 || game.spyRoundsWon > 2 || game.result5) {
+    Games.update(game._id, {$set: {state: 'gameOver'}});
+  }
 }
 
 function trackPlayersState() {
