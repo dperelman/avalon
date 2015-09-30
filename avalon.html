@@ -277,12 +277,18 @@
       <button class="button-pass">Pass</button>
       <button class="button-fail">Fail</button>
     </div>
+
+    {{#if mission}}
+      <p>
+        You are submitting: {{mission}}
+      </p>
+    {{/if}}
   </div>
 </template>
 
 <template name="voteResults">
   {{#if missionExists}}
-      <p class="red">
+      <p class="{{#if numSabotaged}}red{{/if}}">
         The previous mission {{missionResult}}. {{#if numSabotaged}} {{numSabotaged}} sabotaged the mission. {{/if}}
       </p>
   {{/if}}

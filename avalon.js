@@ -416,6 +416,12 @@ if (Meteor.isClient) {
     }
   });
 
+  Template.missionPhaseChosen.helpers({
+    mission: function () {
+      return getCurrentPlayer().mission;
+    }
+  });
+
   Template.assassinPhase.events({
     'click .assassinate': function () {
       var game = getCurrentGame();
