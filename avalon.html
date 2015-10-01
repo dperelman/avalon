@@ -187,7 +187,7 @@
     {{> voteResults}}
 
     {{#if chosenPlayers}}
-      <p>Your leader has chosen: </p>
+      <p>Your leader, {{leader}}, has chosen: </p>
       {{#each chosenPlayers}}
         <li>{{name}}</li>
       {{/each}}
@@ -195,7 +195,7 @@
     {{#if chosen}}
       <p>You have been chosen!</p>
     {{else}}
-      <p>Please wait while your leader chooses a team.</p>
+      <p>Please wait while your leader, {{leader}}, chooses a team.</p>
     {{/if}}
   </div>
 </template>

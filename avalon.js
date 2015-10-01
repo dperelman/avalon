@@ -299,6 +299,9 @@ if (Meteor.isClient) {
     player: function () {
       return getCurrentPlayer();
     },
+    leader: function () {
+      return getCurrentGame().leader;
+    },
     chosen: function () {
       return getCurrentPlayer().chosen;
     },
@@ -457,7 +460,6 @@ if (Meteor.isClient) {
 
   Template.specialGameOver.helpers({
     resistanceWins: function () {
-      debugger;
       return (getCurrentGame().winner === "resistance");
     }
   });
@@ -645,7 +647,7 @@ function trackGameState() {
             { 'ord': game.turn % game.numPlayers }
           ]
    });
-  updateLeader(leader, players);
+  updateLeader(leader, game);
 
 
   if (!game || !player){
@@ -768,12 +770,8 @@ function resetVotes(players) {
   });
 }
 
-function updateLeader(leader, players) {
-  players.forEach(function (player) {
-    Players.update(player._id, {$set: {leader: true}});
-  });
-
-  Players.update(leader._id, {$set: {leader: true}});
+function updateLeader(player, game) {
+  Games.update(game._id, {$set: {"leader": player.name}});
 }
 
 function missionFinished(players) {
