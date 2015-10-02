@@ -77,6 +77,7 @@ if (Meteor.isClient) {
       }
 
       code = code.trim().toLowerCase();
+      var game = Games.findOne({ accessCode: code });
 
       Session.set("loading", true);
 
@@ -85,7 +86,7 @@ if (Meteor.isClient) {
 
         var game = Games.findOne({ accessCode: code });
 
-        if (game) {
+        if (game.state === 'lobby') {
           Meteor.subscribe('players', game._id);
           player = generateNewPlayer(game, name);
 
