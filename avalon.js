@@ -427,7 +427,11 @@ if (Meteor.isClient) {
     },
     'click .button-fail':function () {
       var player = getCurrentPlayer();
-      Players.update(player._id, {$set: {mission: "fail"}});
+      if (player.team === "spy") {
+        Players.update(player._id, {$set: {mission: "fail"}});
+      } else {
+        Players.update(player._id, {$set: {mission: "pass"}});
+      }
     }
   });
 
