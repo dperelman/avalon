@@ -201,6 +201,12 @@ if (Meteor.isClient) {
     }
   });
 
+  Template.roleInfo.helpers({
+    player: function () {
+      return getCurrentPlayer();
+    }
+  });
+
   Template.rolePhase.events({
     'click button': function () {
       var player = getCurrentPlayer();
@@ -219,17 +225,23 @@ if (Meteor.isClient) {
       var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
       return players;
     },
+    team: function () {
+      return capitalize(getCurrentPlayer().team);
+    },
     isSpy: function () {
-      return (getCurrentPlayer().team === "spy" ? true : false);
+      return (getCurrentPlayer().team === "spy");
     },
     isMerlin: function () {
-      return (getCurrentPlayer().role === "merlin" ? true : false);
+      return (getCurrentPlayer().role === "merlin");
     },
     isAssassin: function () {
-      return (getCurrentPlayer().role === "assassin" ? true : false);
+      return (getCurrentPlayer().role === "assassin");
     },
     isPercival: function () {
-      return (getCurrentPlayer().role === "percival" ? true : false);
+      return (getCurrentPlayer().role === "percival");
+    },
+    isMorgana: function () {
+      return (getCurrentPlayer().role === "morgana");
     },
     possibleMerlins: function () {
       var result = [];
@@ -461,6 +473,21 @@ if (Meteor.isClient) {
   Template.specialGameOver.helpers({
     resistanceWins: function () {
       return (getCurrentGame().winner === "resistance");
+    },
+    destroyGame: function () {
+      var game = getCurrentGame();
+      setInterval(function () {
+        Games.remove(game._id);
+      }, 20000);
+    }
+  });
+
+  Template.gameOver.helpers({
+    destroyGame: function () {
+      var game = getCurrentGame();
+      setInterval(function () {
+        Games.remove(game._id);
+      }, 5000);
     }
   });
 }
@@ -552,6 +579,10 @@ function getAccessCode() {
 function shuffle(array){
   for(var j, x, i = array.length; i; j = Math.floor(Math.random() * i), x = array[--i], array[i] = array[j], array[j] = x);
   return array;
+}
+
+function capitalize(string) {
+  return string.slice(0,1).toUpperCase() + string.slice(1);
 }
 
 function assignTeams(players) {

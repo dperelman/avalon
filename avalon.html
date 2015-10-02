@@ -34,8 +34,8 @@
 </template>
 
 <template name="footer">
-  <p class="small"><a href="https://boardgamegeek.com/boardgame/41114/resistance">The Resistance</a> was designed by Don Eskridge</p>
-  <p class="small">Built by <a href="http//alantran.co">Alan Tran</a></p>
+  <p class="small"><a href="https://boardgamegeek.com/boardgame/41114/resistance" target="_blank">The Resistance: Avalon</a> was designed by Don Eskridge</p>
+  <p class="small">Built by <a href="http://alantran.co" target="_blank">Alan Tran</a></p>
 
 </template>
 
@@ -49,6 +49,27 @@
       <div class="score-box {{roundFinished round=5}}"><p>{{missionNum round=5}}</p></div>
     </div>
   {{/if}}
+</template>
+
+<template name="roleInfo">
+  <div class="role-info">
+    <hr class="small-hr">
+    <p id="role-info">
+      Team: {{player.team}} | Role: {{player.role}}
+    </p>
+    <p id="role-info-hidden">
+      Tap to view role info
+    </p>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      $('.role-info').click(function () {
+        $('#role-info').toggle();
+        $('#role-info-hidden').toggle();
+      })
+    })
+  </script>
 </template>
 
 <template name="startMenu">
@@ -137,32 +158,35 @@
 <template name="rolePhase">
   <div class="role-phase">
     <h2>Role Phase</h2>
-    <p>Your team: {{player.team}}</p>
+    <p>Your team: <b class="{{player.team}}">{{team}}</b></p>
 
     {{#if isSpy}}
     <p> Also on your team:
       {{#each allSpies}}
-        <b>{{name}} </b>
+        <b class="spy">{{name}} </b>
       {{/each}}
     </p>
     {{/if}}
 
     {{#if isMerlin}}
-      <p> You are Merlin! The spies are:
+      <p> You are <b class="role">Merlin</b>! The spies are:
         {{#each allSpies}}
-        <b>{{name}} </b>
+        <b class="spy">{{name}} </b>
         {{/each}}
       </p>
     {{/if}}
 
     {{#if isPercival}}
-      <p>You are Percival! Merlin is {{possibleMerlins}}.</p>
+      <p>You are <b class="role">Percival</b>! Merlin is {{possibleMerlins}}.</p>
     {{/if}}
 
     {{#if isAssassin}}
-    <p>You are the assassin! Try to see if you can spot who the Merlin is. You'll have a chance to identify him at the end of the game to win it.</p>
+      <p>You are the <b class="role">assassin</b>! Try to see if you can spot who the Merlin is. You'll have a chance to identify him at the end of the game to win it.</p>
     {{/if}}
 
+    {{#if isMorgana}}
+      <p>You are <b class="role">Morgana!</b> Percival sees you as Merlin.</p>
+    {{/if}}
     <p><b>Ready up!</b></p>
     <ul>
       {{#each players}}
@@ -187,7 +211,7 @@
     {{> voteResults}}
 
     {{#if chosenPlayers}}
-      <p>Your leader, {{leader}}, has chosen: </p>
+      <p>Your leader, <b class="role">{{leader}}</b>, is choosing: </p>
       {{#each chosenPlayers}}
         <li>{{name}}</li>
       {{/each}}
@@ -232,7 +256,7 @@
     <h2>Voting Phase</h2>
   </div>
 
-  <p><b>Current Team</b></p>
+  <p><b>Please vote on the following team:</b></p>
   <ul>
     {{#each chosenPlayers}}
       <li>{{name}}</li>
@@ -241,14 +265,14 @@
 
   <p><b>Waiting for {{ playersCount }} people to vote.</b></p>
 
-  {{#if playerVote}}
-    <p>You are voting: {{ playerVote }}</p>
-  {{/if}}
-
   <div class="button-container">
     <button class="button-accept">Accept</button>
     <button class="button-reject">Reject</button>
   </div>
+
+  {{#if playerVote}}
+    <p>You are voting: {{ playerVote }}</p>
+  {{/if}}
 </template>
 
 <template name="missionPhase">
@@ -293,8 +317,10 @@
       </p>
   {{/if}}
 
+  {{> roleInfo}}
+
   {{#if exists}}
-    <hr>
+    <hr class="small-hr">
     <span id="voteHeader"><h2>Previous Vote Results</h2>(tap to show/hide results)</span>
 
     <div id="voteResults">
@@ -328,7 +354,7 @@
         </div>
       </div>
     </div>
-    <hr>
+    <hr class="small-hr">
   {{/if}}
 
   <script>
@@ -346,6 +372,7 @@
       Game Over
 
       {{voteResults}}
+      {{destroyGame}}
     </p>
   </div>
 </template>
@@ -356,11 +383,14 @@
       Game Over
     </p>
 
-      {{#if resistanceWins}}
-        <p>The assassin guessed incorectly! The resistance wins.</p>
-      {{else}}
-        <p>The assassin guessed correctly! Spies win.</p>
-      {{/if}}
+    {{> roleInfo}}
+    {{#if resistanceWins}}
+      <p>The assassin guessed incorectly! The resistance wins.</p>
+    {{else}}
+      <p>The assassin guessed correctly! Spies win.</p>
+    {{/if}}
+
+    {{destroyGame}}
   </div>
 </template>
 
@@ -391,5 +421,6 @@
     <p>
       The resistance have won 3 rounds! Please wait while the assassin choses a target.
     </p>
+    {{> roleInfo}}
   </div>
 </template>

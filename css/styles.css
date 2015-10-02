@@ -97,7 +97,16 @@ input[type="text"] {
 }
 
 .spy {
-  background-color: red;
+  color: #FB6C6C;
+}
+
+.role {
+  font-family: arial;
+  color: #333;
+}
+
+.resistance {
+  color: #26B2F5;
 }
 
 .ready {
@@ -206,6 +215,16 @@ input[type="checkbox"] {
   margin-right: 10px;
 }
 
-.role-options {
+.role-options,
+#role-info {
   display: none;
+}
+
+.role-info p {
+  font-size: 12px;
+}
+
+hr.small-hr {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
