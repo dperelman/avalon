@@ -8,7 +8,7 @@ The Resistance is a party game of social deduction designed by Don Eskridge. It 
 
 [Resistance: Avalon](https://boardgamegeek.com/boardgame/128882/resistance-avalon) is a social deduction game designed by Don Eskridge. This is an unofficial fan project designed to complement the physical game, and is not endorsed in any way by the designer or publisher. I encourage everyone to go out and pick up a copy of the game.
 
-[Click here to play!](http://www.resistance-avalon.com)
+[Click here to play!](https://www.resistance-avalon.meteor.com)
 
 Built using:
 
