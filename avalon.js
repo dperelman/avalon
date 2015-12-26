@@ -120,6 +120,8 @@ if (Meteor.isClient) {
         return false;
       }
 
+      assignTurnOrder(players);
+      players = Players.find({'gameID': game._id}, {'sort': {'ord': 1}});
       assignTeams(players);
       assignSpecialRoles(players, game);
       Games.update(game._id, {$set: {state: 'rolePhase'}});
@@ -158,7 +160,7 @@ if (Meteor.isClient) {
     players: function () {
       var game = getCurrentGame();
       if (!game) { return null; }
-      var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
+      var players = Players.find({'gameID': game._id}, {'sort': {'ord': 1}}).fetch();
       return players;
     },
     merlin: function () {
@@ -223,7 +225,7 @@ if (Meteor.isClient) {
     players: function () {
       var game = getCurrentGame();
       if (!game) { return null; }
-      var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
+      var players = Players.find({'gameID': game._id}, {'sort': {'ord': 1}}).fetch();
       return players;
     },
     team: function () {
@@ -254,7 +256,7 @@ if (Meteor.isClient) {
             {'role': 'morgana'}
           ] }
         ]
-      }, {sort: {'random': 1}});
+      }, {sort: {'name': 1}});
 
       merlins.forEach(function (player) {
         result.push(player.name);
@@ -266,7 +268,7 @@ if (Meteor.isClient) {
       var game = getCurrentGame();
       var currentPlayer = getCurrentPlayer();
       if (!game) { return null; }
-      var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
+      var players = Players.find({'gameID': game._id}, {'sort': {'ord': 1}}).fetch();
       var spies = [];
 
       players.forEach(function (player) {
@@ -294,7 +296,7 @@ if (Meteor.isClient) {
     players: function () {
       var game = getCurrentGame();
       if (!game) { return null; }
-      var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
+      var players = Players.find({'gameID': game._id}, {'sort': {'ord': 1}}).fetch();
       return players;
     },
     pickMax: function () {
@@ -320,7 +322,7 @@ if (Meteor.isClient) {
     },
     chosenPlayers:function () {
       var game = getCurrentGame();
-      var players = Players.find({'gameID': game._id, 'chosen': true}, {'sort': {'createdAt': 1}}).fetch();
+      var players = Players.find({'gameID': game._id, 'chosen': true}, {'sort': {'ord': 1}}).fetch();
       if (!players) { return null; }
       return players;
     },
@@ -352,7 +354,7 @@ if (Meteor.isClient) {
   Template.votingPhase.helpers({
     chosenPlayers: function () {
       var game = getCurrentGame();
-      var players = Players.find({'gameID': game._id, 'chosen': true}, {'sort': {'createdAt': 1}}).fetch();
+      var players = Players.find({'gameID': game._id, 'chosen': true}, {'sort': {'ord': 1}}).fetch();
       return players;
     },
     playersCount: function () {
@@ -387,13 +389,13 @@ if (Meteor.isClient) {
     acceptVoters: function () {
       var game = getCurrentGame();
       if (!game) { return null; }
-      var players = Players.find({'gameID': game._id, 'previousVote': 'accept'}, {'sort': {'createdAt': 1}}).fetch();
+      var players = Players.find({'gameID': game._id, 'previousVote': 'accept'}, {'sort': {'ord': 1}}).fetch();
       return players;
     },
     rejectVoters: function () {
       var game = getCurrentGame();
       if (!game) { return null; }
-      var players = Players.find({'gameID': game._id, 'previousVote': 'reject'}, {'sort': {'createdAt': 1}}).fetch();
+      var players = Players.find({'gameID': game._id, 'previousVote': 'reject'}, {'sort': {'ord': 1}}).fetch();
       return players;
     },
     numSabotaged: function () {
@@ -549,7 +551,6 @@ function generateNewPlayer(game, name) {
     gameID: game._id,
     name: name,
     ord: game.numPlayers,
-    random: Math.floor(Math.random()*100)
   };
 
   var playerID = Players.insert(player);
@@ -588,6 +589,22 @@ function shuffle(array){
 
 function capitalize(string) {
   return string.slice(0,1).toUpperCase() + string.slice(1);
+}
+
+function assignTurnOrder(players) {
+  var turnOrder = [];
+
+  for(var i = 0; i < players.count(); i++) {
+      turnOrder.push(i);
+  }
+
+  shuffle(turnOrder);
+
+  players.forEach(function (player, index) {
+    Players.update(player._id, {$set: {
+      ord: turnOrder.pop()
+    }});
+  });
 }
 
 function assignTeams(players) {
@@ -676,7 +693,7 @@ function trackGameState() {
 
   var game = Games.findOne(gameID);
   var player = Players.findOne(playerID);
-  var players = Players.find({'gameID': game._id});
+  var players = Players.find({'gameID': game._id}, {'sort': {'ord': 1}});
   var leader = Players.findOne({
      $and: [
             { 'gameID' : game._id },
