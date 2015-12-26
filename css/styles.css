@@ -228,3 +228,99 @@ hr.small-hr {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
+#history {
+  empty-cells: show;
+  background: purple;
+}
+
+#history thead th {
+  padding: 0;
+  padding-bottom: 0.2em;
+  width: 2em;
+  background: white;
+}
+#history thead th p {
+  -ms-writing-mode: tb-rl;
+  -webkit-writing-mode: vertical-rl;
+  -moz-writing-mode: vertical-rl;
+  -ms-writing-mode: vertical-rl;
+  writing-mode: vertical-rl;
+  text-align: end;
+  margin-left: auto;
+  margin-right: auto;
+  min-height: 5em;
+}
+#history tbody {
+  background: purple;
+}
+#history tbody td {
+  text-align: center;
+  /* TODO Why does this not fill the cell? */
+  font-size: 1em;
+  padding: 0;
+  margin: 0;
+}
+#history tbody td.accept:before {
+  color: green;
+  content: "\2713";
+}
+#history tbody td.reject:before {
+  color: brown;
+  content: "\2717";
+}
+#history tbody tr.pending {
+  background: #ffffcc;
+}
+#history tbody tr.voting {
+  background: #e3e3ab;
+}
+#history tbody tr.voting td.chosen {
+  background: #bbbb00;
+}
+#history tbody tr.reject {
+  background: #dddddd;
+}
+#history tbody tr.reject td.chosen {
+  background: #aaaaaa;
+}
+#history tbody tr.accept-pending {
+  background: #ffc799;
+}
+#history tbody tr.accept-pending td.chosen {
+  background: orange;
+}
+#history tbody tr.fail {
+  background: #e69e9e;
+}
+#history tbody tr.fail td.chosen {
+  background: #ff1616;
+}
+#history tbody tr.pass {
+  background: #ccccff;
+}
+#history tbody tr.pass td.chosen {
+  background: #6666ff;
+}
+#history tbody tr.summary.fail {
+  background: red;
+}
+#history tbody tr.summary.pass {
+  background: blue;
+}
+#history tbody td {
+  border: solid #e1e1e1 1px;
+  padding: 0;
+  width: 2em;
+  height: 2em;
+  min-width: 2em;
+  max-width: 2em;
+  min-height: 2em;
+  max-height: 2em;
+}
+#history tbody td.leader {
+  border-radius: 50%;
+}
+#history tbody td.chosen {
+  border: solid black 3px;
+}

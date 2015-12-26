@@ -27,6 +27,8 @@
     {{> score}}
     <br>
     {{> Template.dynamic template=whichView}}
+    <br>
+    {{> history}}
     <hr>
 
     {{> footer}}
@@ -423,4 +425,96 @@
     </p>
     {{> roleInfo}}
   </div>
+</template>
+
+<template name="history">
+  <table id="history">
+    <thead>
+      <tr>
+      {{#each players}}
+        <th><p>{{ name }}</p></th>
+      {{/each}}
+      </tr>
+    </thead>
+    {{#each rounds}}
+    <tbody>
+      {{#each votes}}
+      <tr class="{{status}}">
+        {{#each playerVotes}}
+        <td class="{{classList}}"></td>
+        {{/each}}
+      </tr>
+      {{/each}}
+      {{#if isCompleted}}
+      <tr class="summary {{result}}">
+        <td colspan="5">Mission {{round}} {{result}}ed with {{fails}} failures</td>
+      </tr>
+      {{/if}}
+    </tbody>
+    {{/each}}
+  </table>
+</template>
+
+<template name="test">
+  <table id="history">
+    <thead>
+      <th><p>Player 1</p></th>
+      <th><p>Player 2</p></th>
+      <th><p>Player 3</p></th>
+      <th><p>Player 4</p></th>
+      <th><p>Player 5</p></th>
+    </thead>
+    <tbody>
+      <tr class="reject">
+        <td class="leader chosen reject"></td>
+        <td class="reject"></td>
+        <td class="chosen accept"></td>
+        <td class="reject"></td>
+        <td class="accept"></td>
+      </tr>
+      <tr class="accept-pending">
+        <td class="chosen accept"></td>
+        <td class="leader accept"></td>
+        <td class="reject"></td>
+        <td class="reject"></td>
+        <td class="chosen accept"></td>
+      </tr>
+      <tr class="fail">
+        <td class="accept"></td>
+        <td class="chosen accept"></td>
+        <td class="leader chosen reject"></td>
+        <td class="reject"></td>
+        <td class="accept"></td>
+      </tr>
+      <tr class="summary fail">
+        <td colspan="5">Mission 1 failed with 2 failures</td>
+      </tr>
+    </tbody>
+    <tbody>
+      <tr class="pending">
+        <td class=""></td>
+        <td class=""></td>
+        <td class=""></td>
+        <td class="leader"></td>
+        <td class=""></td>
+      </tr>
+      <tr class="voting">
+        <td class="chosen"></td>
+        <td class=""></td>
+        <td class=""></td>
+        <td class=""></td>
+        <td class="leader chosen"></td>
+      </tr>
+      <tr class="pass">
+        <td class="leader accept"></td>
+        <td class="chosen accept"></td>
+        <td class="chosen reject"></td>
+        <td class="reject chosen"></td>
+        <td class="accept"></td>
+      </tr>
+      <tr class="summary pass">
+        <td colspan="5">Mission 2 passed</td>
+      </tr>
+    </tbody>
+  </table>
 </template>
