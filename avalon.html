@@ -127,6 +127,7 @@
       <div class="game-options">
         <p class="options-header">Options</p>
         <div class="role-options">
+          <li class="checked"><input type="checkbox" class="displayHistory" checked="{{displayHistory}}"><span>show history table</span></li>
           <li class="checked"><input type="checkbox" class="merlin" checked="{{merlin}}"><span>Merlin</span></li>
           <li class="checked"><input type="checkbox" class="assassin" checked="{{assassin}}"><span>Assassin</span></li>
           <li class="checked"><input type="checkbox" class="morgana" checked="{{morgana}}"><span>Morgana</span></li>
@@ -428,6 +429,7 @@
 </template>
 
 <template name="history">
+  {{#if displayHistory}}
   <table id="history">
     <thead>
       <tr>
@@ -453,6 +455,7 @@
     </tbody>
     {{/each}}
   </table>
+  {{/if}}
 </template>
 
 <template name="test">

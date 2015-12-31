@@ -149,6 +149,10 @@ if (Meteor.isClient) {
       Session.set("playerID", null);
       Session.set("gameID", null);
     },
+    "click .displayHistory":function () {
+      var game = getCurrentGame();
+      Games.update(game._id, {$set: {displayHistory: ! game.displayHistory}});
+    },
     "click .merlin":function () {
       var game = getCurrentGame();
       Games.update(game._id, {$set: {merlin: ! game.merlin}});
@@ -179,6 +183,9 @@ if (Meteor.isClient) {
       if (!game) { return null; }
       var players = Players.find({'gameID': game._id}, {'sort': {'ord': 1}}).fetch();
       return players;
+    },
+    displayHistory: function () {
+      return getCurrentGame().displayHistory;
     },
     merlin: function () {
       return getCurrentGame().merlin;
@@ -527,6 +534,10 @@ if (Meteor.isClient) {
   });
 
   Template.history.helpers({
+    displayHistory: function() {
+      var game = getCurrentGame();
+      return game != null && game.displayHistory;
+    },
     players: function() {
       return Players.find({'gameID': getCurrentGame()._id}, {'sort': {'ord': 1}});
     },
@@ -589,6 +600,7 @@ function generateNewGame() {
     round: 0,
     spyRoundsWon: 0,
     resRoundsWon: 0,
+    displayHistory: true,
   };
 
   var gameID = Games.insert(game);
