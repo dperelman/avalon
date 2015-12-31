@@ -165,6 +165,10 @@ if (Meteor.isClient) {
       var game = getCurrentGame();
       Games.update(game._id, {$set: {morgana: ! game.morgana}});
     },
+    "click .mordred":function () {
+      var game = getCurrentGame();
+      Games.update(game._id, {$set: {mordred: ! game.mordred}});
+    },
     "click .percival":function () {
       var game = getCurrentGame();
       Games.update(game._id, {$set: {percival: ! game.percival}});
@@ -195,6 +199,9 @@ if (Meteor.isClient) {
     },
     morgana: function () {
       return getCurrentGame().morgana;
+    },
+    mordred: function () {
+      return getCurrentGame().mordred;
     },
     percival: function () {
       return getCurrentGame().percival;
@@ -257,6 +264,12 @@ if (Meteor.isClient) {
     isMorgana: function () {
       return (getCurrentPlayer().role === "morgana");
     },
+    isMordred: function () {
+      return (getCurrentPlayer().role === "mordred");
+    },
+    gameHasMordred: function () {
+      return !!Players.findOne({gameID: getCurrentGame()._id, role: 'mordred'});
+    },
     possibleMerlins: function () {
       var result = [];
       var merlins =  Players.find({
@@ -283,7 +296,8 @@ if (Meteor.isClient) {
       var spies = [];
 
       players.forEach(function (player) {
-        if (player.team === "spy" && player._id !== currentPlayer._id) {
+        if (player.team === "spy" && player._id !== currentPlayer._id
+            && !(currentPlayer.role == "merlin" && player.role == "mordred")) {
           spies.push(player);
         }
       });
@@ -808,6 +822,7 @@ function assignSpecialRoles(players, game) {
   if (game.merlin) {goodRoles.push("merlin");}
   if (game.assassin) {evilRoles.push("assassin");}
   if (game.morgana) {evilRoles.push("morgana");}
+  if (game.mordred) {evilRoles.push("mordred");}
   if (game.percival) {goodRoles.push("percival");}
 
   players.forEach(function (player) {

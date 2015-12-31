@@ -68,7 +68,7 @@
     {{/if}}
 
     {{#if isMerlin}}
-      <p>The spies are:
+      <p>The spies {{#if gameHasMordred}}(except Mordred){{/if}} are:
         {{#each allSpies}}
         <b class="spy">{{name}} </b>
         {{/each}}
@@ -159,6 +159,7 @@
           <li class="checked"><input type="checkbox" class="merlin" checked="{{merlin}}"><span>Merlin</span></li>
           <li class="checked"><input type="checkbox" class="assassin" checked="{{assassin}}"><span>Assassin</span></li>
           <li class="checked"><input type="checkbox" class="morgana" checked="{{morgana}}"><span>Morgana</span></li>
+          <li class="checked"><input type="checkbox" class="mordred" checked="{{mordred}}"><span>Mordred</span></li>
           <li class="checked"><input type="checkbox" class="percival" checked="{{percival}}"><span>Percival</span></li>
         </div>
       </div>
