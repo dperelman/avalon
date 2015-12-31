@@ -1,6 +1,11 @@
 Games = new Mongo.Collection("games");
-Rounds = new Mongo.Collection("rounds");
 Players = new Mongo.Collection("players");
+// A round is one of the 5 game rounds.
+Rounds = new Mongo.Collection("rounds");
+// Each round contains one or more votes.
+Votes = new Mongo.Collection("votes");
+// Each vote has a player vote from each player.
+PlayerVotes = new Mongo.Collection("playerVotes");
 
 if (Meteor.isClient) {
   Template.body.created = function () {
@@ -48,6 +53,9 @@ if (Meteor.isClient) {
         Session.set("playerID", player._id);
         Session.set("currentView", "lobby");
       });
+      Meteor.subscribe('rounds', game._id)
+      Meteor.subscribe('votes', game._id)
+      Meteor.subscribe('playerVotes', game._id)
 
       Tracker.autorun(trackGameState);
     }
@@ -90,6 +98,10 @@ if (Meteor.isClient) {
           Meteor.subscribe('players', game._id);
           player = generateNewPlayer(game, name);
 
+          Meteor.subscribe('rounds', game._id)
+          Meteor.subscribe('votes', game._id)
+          Meteor.subscribe('playerVotes', game._id)
+
           Session.set("gameID", game._id);
           Session.set("playerID", player._id);
           Session.set("currentView", "lobby");
@@ -108,7 +120,7 @@ if (Meteor.isClient) {
       var game = getCurrentGame();
       var players = Players.find({'gameID': game._id});
 
-      if (players.count() < 5) {
+      if (players.count() < 3) {
         $('.player-alert-5').show();
         $('.player-alert-10').hide();
         return false;
@@ -124,13 +136,22 @@ if (Meteor.isClient) {
       players = Players.find({'gameID': game._id}, {'sort': {'ord': 1}});
       assignTeams(players);
       assignSpecialRoles(players, game);
+      
+      generateNewRound(game, 0);
+
       Games.update(game._id, {$set: {state: 'rolePhase'}});
     },
     "click .button-leave":function () {
-      Games.update(getCurrentGame()._id, {$set: {numPlayers: game.numPlayers - 1}});
+      var game = getCurrentGame();
+      Games.update(game._id, {$set: {numPlayers: game.numPlayers - 1}});
       Session.set("currentView", "startMenu");
       Players.remove(getCurrentPlayer()._id);
       Session.set("playerID", null);
+      Session.set("gameID", null);
+    },
+    "click .displayHistory":function () {
+      var game = getCurrentGame();
+      Games.update(game._id, {$set: {displayHistory: ! game.displayHistory}});
     },
     "click .merlin":function () {
       var game = getCurrentGame();
@@ -162,6 +183,9 @@ if (Meteor.isClient) {
       if (!game) { return null; }
       var players = Players.find({'gameID': game._id}, {'sort': {'ord': 1}}).fetch();
       return players;
+    },
+    displayHistory: function () {
+      return getCurrentGame().displayHistory;
     },
     merlin: function () {
       return getCurrentGame().merlin;
@@ -287,6 +311,17 @@ if (Meteor.isClient) {
       var numChosen = Players.find({'gameID': game._id, 'chosen': true}).count();
       var roundMax = missionNumPlayers(game.round, game.numPlayers)[0];
       if (numChosen == roundMax) {
+        var currentVote = getCurrentVote();
+        var chosen = [];
+        Players.find({'gameID': game._id, 'chosen': true})
+               .fetch()
+               .forEach(function (player) {
+          chosen.push(player.ord);
+          var pv = PlayerVotes.findOne({voteID: currentVote._id, ord: player.ord});
+          pv.classes.push("chosen");
+          PlayerVotes.update(pv._id, { $set: { chosen: true, classes: pv.classes } });
+        });
+        Votes.update(currentVote._id, { $set: { chosen: chosen, status: "voting" }});
         Games.update(game._id, {$set: {state: "votingPhase"}});
       }
     }
@@ -497,6 +532,31 @@ if (Meteor.isClient) {
       }, 5000);
     }
   });
+
+  Template.history.helpers({
+    displayHistory: function() {
+      var game = getCurrentGame();
+      return game != null && game.displayHistory;
+    },
+    players: function() {
+      return Players.find({'gameID': getCurrentGame()._id}, {'sort': {'ord': 1}});
+    },
+    rounds: function() {
+      return Rounds.find({gameID: getCurrentGame()._id}, {sort: {'round': 1}});
+    },
+    votes: function() {
+      return Votes.find({gameID: getCurrentGame()._id, roundID: this._id}, {sort: {'ord': 1}});
+    },
+    playerVotes: function() {
+      return PlayerVotes.find({gameID: getCurrentGame()._id, voteID: this._id}, {sort: {'ord': 1}});
+    },
+    classList: function() {
+      return this.classes.join(' ');
+    },
+    isCompleted: function() {
+      return this.result == "fail" || this.result == "pass";
+    },
+  });
 }
 
 if (Meteor.isServer) {
@@ -505,6 +565,8 @@ if (Meteor.isServer) {
     Games.remove({});
     Players.remove({});
     Rounds.remove({});
+    Votes.remove({});
+    PlayerVotes.remove({});
   });
 
   Meteor.publish('games', function(accessCode) {
@@ -513,6 +575,18 @@ if (Meteor.isServer) {
 
   Meteor.publish('players', function(gameID) {
     return Players.find({"gameID": gameID});
+  });
+
+  Meteor.publish('rounds', function(gameID) {
+    return Rounds.find({"gameID": gameID});
+  });
+
+  Meteor.publish('votes', function(gameID) {
+    return Votes.find({"gameID": gameID});
+  });
+
+  Meteor.publish('playerVotes', function(gameID) {
+    return PlayerVotes.find({"gameID": gameID});
   });
 }
 
@@ -523,9 +597,10 @@ function generateNewGame() {
     numPlayers: 0,
     state: "lobby",
     turn: 0,
-    round: 1,
+    round: 0,
     spyRoundsWon: 0,
-    resRoundsWon: 0
+    resRoundsWon: 0,
+    displayHistory: true,
   };
 
   var gameID = Games.insert(game);
@@ -558,11 +633,75 @@ function generateNewPlayer(game, name) {
   return player;
 }
 
+function generateNewVote(game, round, leader) {
+  var vote = {
+    gameID: game._id,
+    roundID: round._id,
+    ord: Votes.find({roundID: round._id}).count(),
+    leader: leader,
+    status: "pending",
+  }
+  
+  var voteID = Votes.insert(vote);
+  var vote = Votes.findOne(voteID);
+
+  var players = Players.find({'gameID': game._id}, {'sort': {'ord': 1}});
+  players.forEach(function (player, index) {
+    var playerVote = {
+      gameID: game._id,
+      roundID: round._id,
+      voteID: voteID,
+      ord: player.ord,
+      classes: player.ord == leader ? ["leader"] : [],
+    }
+    PlayerVotes.insert(playerVote);
+  });
+}
+function generateNewRound(game, leader) {
+  var roundNum = game.round + 1;
+  Games.update(game._id, {$set: {round: roundNum}});
+
+  var round = {
+    gameID: game._id,
+    round: roundNum,
+    fails: null,
+    result: null,
+  };
+
+  var roundID = Rounds.insert(round);
+  var round = Rounds.findOne(roundID);
+
+  generateNewVote(game, round, leader);
+
+  return round;
+}
+
 function getCurrentGame() {
   var gameID = Session.get("gameID");
 
   if (gameID) {
     return Games.findOne(gameID);
+  }
+
+  return null;
+}
+
+function getCurrentRound() {
+  var game = getCurrentGame();
+
+  if (game) {
+    return Rounds.findOne({gameID: game._id, round: game.round});
+  }
+
+  return null;
+}
+
+function getCurrentVote() {
+  var round = getCurrentRound();
+  
+  if(round) {
+    var votes = Votes.find({'gameID': round.gameID, 'roundID': round._id}, { sort: {'ord': -1} }).fetch();
+    return votes[0];
   }
 
   return null;
@@ -692,6 +831,9 @@ function trackGameState() {
   }
 
   var game = Games.findOne(gameID);
+  if (!game) {
+    return;
+  }
   var player = Players.findOne(playerID);
   var players = Players.find({'gameID': game._id}, {'sort': {'ord': 1}});
   var leader = Players.findOne({
@@ -767,9 +909,14 @@ function trackPlayersState() {
       Games.update(game._id, {$set: {state: "pickPhase", turn: game.turn + 1, voteRejected: true }});
     }
   }
-  if (Session.get("currentView") === "missionPhase" && !!missionFinished(players)){
+  if (game.state === "missionPhase" && !!missionFinished(players)){
     handleMissionResult(missionFinished(players));
     resetAll(players);
+    // All players get here. Only run once.
+    if (getCurrentPlayer().ord == 0
+        && game.spyRoundsWon < 3 && game.resRoundsWon < 3) {
+      generateNewRound(game, game.turn % game.numPlayers);
+    }
   }
 }
 
@@ -812,9 +959,28 @@ function resetAll(players) {
 }
 
 function recordVotes(players) {
+  var currentVote = getCurrentVote();
+
   players.forEach(function (player) {
+    var pv = PlayerVotes.findOne({voteID: currentVote._id, ord: player.ord});
+    pv.classes.push(player.vote);
+    PlayerVotes.update(pv._id, { $set: { vote: player.vote, classes: pv.classes } });
+
     Players.update(player._id, { $set: { previousVote: player.vote }});
   });
+  // This function gets called for every player, but we only want to do
+  // this once.
+  if (getCurrentPlayer().ord == 0) {
+    if (allVoted(players) == "accept") {
+      Votes.update(currentVote._id, { $set: { status: "accept-pending" }});
+    } else {
+      Votes.update(currentVote._id, { $set: { status: "reject" }});
+
+      var game = getCurrentGame();
+      var newLeader = currentVote.leader + 1 % game.numPlayers;
+      generateNewVote(game, getCurrentRound(), newLeader);
+    }
+  }
 }
 
 function resetVotes(players) {
@@ -844,6 +1010,11 @@ function missionFinished(players) {
   if (missionNumPlayers(game.round, game.numPlayers)[0] > (pass + fail)) {
     return false;
   } else {
+    var round = getCurrentRound();
+    var resString = fail < numToFail ? "pass" : "fail";
+    Rounds.update(round._id, { $set: { result: resString, fails: fail } });
+    var vote = getCurrentVote();
+    Votes.update(vote._id, { $set: { status: resString } });
     return ( fail >= numToFail ? fail : "pass");
   }
 }

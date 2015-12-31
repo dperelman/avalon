@@ -27,6 +27,8 @@
     {{> score}}
     <br>
     {{> Template.dynamic template=whichView}}
+    <br>
+    {{> history}}
     <hr>
 
     {{> footer}}
@@ -125,6 +127,7 @@
       <div class="game-options">
         <p class="options-header">Options</p>
         <div class="role-options">
+          <li class="checked"><input type="checkbox" class="displayHistory" checked="{{displayHistory}}"><span>show history table</span></li>
           <li class="checked"><input type="checkbox" class="merlin" checked="{{merlin}}"><span>Merlin</span></li>
           <li class="checked"><input type="checkbox" class="assassin" checked="{{assassin}}"><span>Assassin</span></li>
           <li class="checked"><input type="checkbox" class="morgana" checked="{{morgana}}"><span>Morgana</span></li>
@@ -423,4 +426,98 @@
     </p>
     {{> roleInfo}}
   </div>
+</template>
+
+<template name="history">
+  {{#if displayHistory}}
+  <table id="history">
+    <thead>
+      <tr>
+      {{#each players}}
+        <th><p>{{ name }}</p></th>
+      {{/each}}
+      </tr>
+    </thead>
+    {{#each rounds}}
+    <tbody>
+      {{#each votes}}
+      <tr class="{{status}}">
+        {{#each playerVotes}}
+        <td class="{{classList}}"></td>
+        {{/each}}
+      </tr>
+      {{/each}}
+      {{#if isCompleted}}
+      <tr class="summary {{result}}">
+        <td colspan="5">Mission {{round}} {{result}}ed with {{fails}} failures</td>
+      </tr>
+      {{/if}}
+    </tbody>
+    {{/each}}
+  </table>
+  {{/if}}
+</template>
+
+<template name="test">
+  <table id="history">
+    <thead>
+      <th><p>Player 1</p></th>
+      <th><p>Player 2</p></th>
+      <th><p>Player 3</p></th>
+      <th><p>Player 4</p></th>
+      <th><p>Player 5</p></th>
+    </thead>
+    <tbody>
+      <tr class="reject">
+        <td class="leader chosen reject"></td>
+        <td class="reject"></td>
+        <td class="chosen accept"></td>
+        <td class="reject"></td>
+        <td class="accept"></td>
+      </tr>
+      <tr class="accept-pending">
+        <td class="chosen accept"></td>
+        <td class="leader accept"></td>
+        <td class="reject"></td>
+        <td class="reject"></td>
+        <td class="chosen accept"></td>
+      </tr>
+      <tr class="fail">
+        <td class="accept"></td>
+        <td class="chosen accept"></td>
+        <td class="leader chosen reject"></td>
+        <td class="reject"></td>
+        <td class="accept"></td>
+      </tr>
+      <tr class="summary fail">
+        <td colspan="5">Mission 1 failed with 2 failures</td>
+      </tr>
+    </tbody>
+    <tbody>
+      <tr class="pending">
+        <td class=""></td>
+        <td class=""></td>
+        <td class=""></td>
+        <td class="leader"></td>
+        <td class=""></td>
+      </tr>
+      <tr class="voting">
+        <td class="chosen"></td>
+        <td class=""></td>
+        <td class=""></td>
+        <td class=""></td>
+        <td class="leader chosen"></td>
+      </tr>
+      <tr class="pass">
+        <td class="leader accept"></td>
+        <td class="chosen accept"></td>
+        <td class="chosen reject"></td>
+        <td class="reject chosen"></td>
+        <td class="accept"></td>
+      </tr>
+      <tr class="summary pass">
+        <td colspan="5">Mission 2 passed</td>
+      </tr>
+    </tbody>
+  </table>
 </template>
