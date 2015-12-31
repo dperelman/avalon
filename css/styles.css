@@ -189,6 +189,9 @@ li.voter {
   width: 50%;
 }
 
+.alert-player-connected,
+.alert-game-started,
+.alert-unique-name,
 .player-alert-5,
 .player-alert-10 {
   color: #D25959;

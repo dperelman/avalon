@@ -95,16 +95,63 @@ if (Meteor.isClient) {
         var game = Games.findOne({ accessCode: code });
 
         if (game.state === 'lobby') {
-          Meteor.subscribe('players', game._id);
-          player = generateNewPlayer(game, name);
+          Meteor.subscribe('players', game._id, function onReady() {
+            var sameNamePlayer = Players.findOne({ gameID: game._id, name: name });
+            $('.alert-game-started').hide();
+            if (sameNamePlayer) {
+              $('.alert-unique-name').show();
+              return false;
+            } else {
+              $('.alert-unique-name').hide();
+            }
 
-          Meteor.subscribe('rounds', game._id)
-          Meteor.subscribe('votes', game._id)
-          Meteor.subscribe('playerVotes', game._id)
+            player = generateNewPlayer(game, name);
+            Meteor.setInterval(function() {
+              Players.update(player._id, { $set: { keepAlive: Date.now() } });
+            }, 1000)
 
-          Session.set("gameID", game._id);
-          Session.set("playerID", player._id);
-          Session.set("currentView", "lobby");
+            Meteor.subscribe('rounds', game._id)
+            Meteor.subscribe('votes', game._id)
+            Meteor.subscribe('playerVotes', game._id)
+
+            Session.set("gameID", game._id);
+            Session.set("playerID", player._id);
+            Session.set("currentView", "lobby");
+          });
+        } else if (game) {
+          Meteor.subscribe('players', game._id, function onReady() {
+            var sameNamePlayer = Players.findOne({ gameID: game._id, name: name });
+            $('.alert-unique-name').hide();
+            if (sameNamePlayer) {
+              // Only allow rejoins for players that have been
+              // disconnected for at least 10 seconds (10000
+              // milliseconds).
+              if (Date.now() - sameNamePlayer.keepAlive > 10000) {
+                $('.alert-game-started').hide();
+                $('.alert-player-connected').hide();
+                player = sameNamePlayer;
+              } else {
+                $('.alert-game-started').show();
+                $('.alert-player-connected').show();
+                return false;
+              }
+            } else {
+              $('.alert-player-connected').hide();
+              $('.alert-game-started').show();
+            }
+
+            Meteor.setInterval(function() {
+              Players.update(player._id, { $set: { keepAlive: Date.now() } });
+            }, 1000)
+
+            Meteor.subscribe('rounds', game._id)
+            Meteor.subscribe('votes', game._id)
+            Meteor.subscribe('playerVotes', game._id)
+
+            Session.set("gameID", game._id);
+            Session.set("playerID", player._id);
+            Session.set("currentView", "lobby");
+          });
         } else {
           //invalid code validation here
           return false;
@@ -204,6 +251,9 @@ if (Meteor.isClient) {
   Template.score.helpers({
     game: function () {
       return getCurrentGame();
+    },
+    code: function () {
+      return getAccessCode();
     },
     missionNum: function (object) {
       var game = getCurrentGame();
@@ -626,6 +676,7 @@ function generateNewPlayer(game, name) {
     gameID: game._id,
     name: name,
     ord: game.numPlayers,
+    keepAlive: Date.now(),
   };
 
   var playerID = Players.insert(player);
