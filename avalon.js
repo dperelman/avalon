@@ -97,6 +97,7 @@ if (Meteor.isClient) {
         if (game.state === 'lobby') {
           Meteor.subscribe('players', game._id, function onReady() {
             var sameNamePlayer = Players.findOne({ gameID: game._id, name: name });
+            $('.alert-game-started').hide();
             if (sameNamePlayer) {
               $('.alert-unique-name').show();
               return false;
@@ -109,6 +110,21 @@ if (Meteor.isClient) {
             Meteor.subscribe('rounds', game._id)
             Meteor.subscribe('votes', game._id)
             Meteor.subscribe('playerVotes', game._id)
+
+            Session.set("gameID", game._id);
+            Session.set("playerID", player._id);
+            Session.set("currentView", "lobby");
+          });
+        } else if (game) {
+          Meteor.subscribe('players', game._id, function onReady() {
+            var sameNamePlayer = Players.findOne({ gameID: game._id, name: name });
+            $('.alert-unique-name').hide();
+            if (sameNamePlayer) {
+              $('.alert-game-started').hide();
+              player = sameNamePlayer;
+            } else {
+              $('.alert-game-started').show();
+            }
 
             Session.set("gameID", game._id);
             Session.set("playerID", player._id);
