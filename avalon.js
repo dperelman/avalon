@@ -95,16 +95,25 @@ if (Meteor.isClient) {
         var game = Games.findOne({ accessCode: code });
 
         if (game.state === 'lobby') {
-          Meteor.subscribe('players', game._id);
-          player = generateNewPlayer(game, name);
+          Meteor.subscribe('players', game._id, function onReady() {
+            var sameNamePlayer = Players.findOne({ gameID: game._id, name: name });
+            if (sameNamePlayer) {
+              $('.alert-unique-name').show();
+              return false;
+            } else {
+              $('.alert-unique-name').hide();
+            }
 
-          Meteor.subscribe('rounds', game._id)
-          Meteor.subscribe('votes', game._id)
-          Meteor.subscribe('playerVotes', game._id)
+            player = generateNewPlayer(game, name);
 
-          Session.set("gameID", game._id);
-          Session.set("playerID", player._id);
-          Session.set("currentView", "lobby");
+            Meteor.subscribe('rounds', game._id)
+            Meteor.subscribe('votes', game._id)
+            Meteor.subscribe('playerVotes', game._id)
+
+            Session.set("gameID", game._id);
+            Session.set("playerID", player._id);
+            Session.set("currentView", "lobby");
+          });
         } else {
           //invalid code validation here
           return false;
