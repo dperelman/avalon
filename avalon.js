@@ -106,6 +106,9 @@ if (Meteor.isClient) {
             }
 
             player = generateNewPlayer(game, name);
+            Meteor.setInterval(function() {
+              Players.update(player._id, { $set: { keepAlive: Date.now() } });
+            }, 1000)
 
             Meteor.subscribe('rounds', game._id)
             Meteor.subscribe('votes', game._id)
@@ -120,11 +123,30 @@ if (Meteor.isClient) {
             var sameNamePlayer = Players.findOne({ gameID: game._id, name: name });
             $('.alert-unique-name').hide();
             if (sameNamePlayer) {
-              $('.alert-game-started').hide();
-              player = sameNamePlayer;
+              // Only allow rejoins for players that have been
+              // disconnected for at least 10 seconds (10000
+              // milliseconds).
+              if (Date.now() - sameNamePlayer.keepAlive > 10000) {
+                $('.alert-game-started').hide();
+                $('.alert-player-connected').hide();
+                player = sameNamePlayer;
+              } else {
+                $('.alert-game-started').show();
+                $('.alert-player-connected').show();
+                return false;
+              }
             } else {
+              $('.alert-player-connected').hide();
               $('.alert-game-started').show();
             }
+
+            Meteor.setInterval(function() {
+              Players.update(player._id, { $set: { keepAlive: Date.now() } });
+            }, 1000)
+
+            Meteor.subscribe('rounds', game._id)
+            Meteor.subscribe('votes', game._id)
+            Meteor.subscribe('playerVotes', game._id)
 
             Session.set("gameID", game._id);
             Session.set("playerID", player._id);
@@ -651,6 +673,7 @@ function generateNewPlayer(game, name) {
     gameID: game._id,
     name: name,
     ord: game.numPlayers,
+    keepAlive: Date.now(),
   };
 
   var playerID = Players.insert(player);
