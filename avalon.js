@@ -127,7 +127,8 @@ if (Meteor.isClient) {
       Games.update(game._id, {$set: {state: 'rolePhase'}});
     },
     "click .button-leave":function () {
-      Games.update(getCurrentGame()._id, {$set: {numPlayers: game.numPlayers - 1}});
+      var game = getCurrentGame();
+      Games.update(game._id, {$set: {numPlayers: game.numPlayers - 1}});
       Session.set("currentView", "startMenu");
       Players.remove(getCurrentPlayer()._id);
       Session.set("playerID", null);
