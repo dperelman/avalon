@@ -57,7 +57,35 @@
   <div class="role-info">
     <hr class="small-hr">
     <p id="role-info">
-      Team: {{player.team}} | Role: {{player.role}}
+      Team: <b class="{{player.team}}">{{team}}</b> | Role: {{role}}
+
+    {{#if isSpy}}
+    <p>Other spies:
+      {{#each allSpies}}
+        <b class="spy">{{name}} </b>
+      {{/each}}
+    </p>
+    {{/if}}
+
+    {{#if isMerlin}}
+      <p>The spies are:
+        {{#each allSpies}}
+        <b class="spy">{{name}} </b>
+        {{/each}}
+      </p>
+    {{/if}}
+
+    {{#if isPercival}}
+      <p>Merlin is {{possibleMerlins}}.</p>
+    {{/if}}
+
+    {{#if isAssassin}}
+      <p>Try to see if you can spot who the Merlin is. You'll have a chance to identify him at the end of the game to win it.</p>
+    {{/if}}
+
+    {{#if isMorgana}}
+      <p>Percival sees you as Merlin.</p>
+    {{/if}}
     </p>
     <p id="role-info-hidden">
       Tap to view role info
@@ -161,35 +189,8 @@
 <template name="rolePhase">
   <div class="role-phase">
     <h2>Role Phase</h2>
-    <p>Your team: <b class="{{player.team}}">{{team}}</b></p>
+    {{> roleInfo}}
 
-    {{#if isSpy}}
-    <p> Also on your team:
-      {{#each allSpies}}
-        <b class="spy">{{name}} </b>
-      {{/each}}
-    </p>
-    {{/if}}
-
-    {{#if isMerlin}}
-      <p> You are <b class="role">Merlin</b>! The spies are:
-        {{#each allSpies}}
-        <b class="spy">{{name}} </b>
-        {{/each}}
-      </p>
-    {{/if}}
-
-    {{#if isPercival}}
-      <p>You are <b class="role">Percival</b>! Merlin is {{possibleMerlins}}.</p>
-    {{/if}}
-
-    {{#if isAssassin}}
-      <p>You are the <b class="role">assassin</b>! Try to see if you can spot who the Merlin is. You'll have a chance to identify him at the end of the game to win it.</p>
-    {{/if}}
-
-    {{#if isMorgana}}
-      <p>You are <b class="role">Morgana!</b> Percival sees you as Merlin.</p>
-    {{/if}}
     <p><b>Ready up!</b></p>
     <ul>
       {{#each players}}

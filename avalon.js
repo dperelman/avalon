@@ -231,29 +231,16 @@ if (Meteor.isClient) {
   Template.roleInfo.helpers({
     player: function () {
       return getCurrentPlayer();
-    }
-  });
-
-  Template.rolePhase.events({
-    'click button': function () {
-      var player = getCurrentPlayer();
-      Players.update(player._id, {$set: {ready: "ready"}});
-      Tracker.autorun(trackPlayersState);
-    }
-  });
-
-  Template.rolePhase.helpers({
-    player: function () {
-      return getCurrentPlayer();
-    },
-    players: function () {
-      var game = getCurrentGame();
-      if (!game) { return null; }
-      var players = Players.find({'gameID': game._id}, {'sort': {'ord': 1}}).fetch();
-      return players;
     },
     team: function () {
       return capitalize(getCurrentPlayer().team);
+    },
+    role: function () {
+      var role = getCurrentPlayer().role;
+      if (!role) {
+        role = "normal";
+      }
+      return capitalize(role);
     },
     isSpy: function () {
       return (getCurrentPlayer().team === "spy");
@@ -303,6 +290,26 @@ if (Meteor.isClient) {
 
       return spies;
     }
+  });
+
+  Template.rolePhase.events({
+    'click button': function () {
+      var player = getCurrentPlayer();
+      Players.update(player._id, {$set: {ready: "ready"}});
+      Tracker.autorun(trackPlayersState);
+    }
+  });
+
+  Template.rolePhase.helpers({
+    player: function () {
+      return getCurrentPlayer();
+    },
+    players: function () {
+      var game = getCurrentGame();
+      if (!game) { return null; }
+      var players = Players.find({'gameID': game._id}, {'sort': {'ord': 1}}).fetch();
+      return players;
+    },
   });
 
   Template.pickPhaseLeader.events({
