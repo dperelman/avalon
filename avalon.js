@@ -252,6 +252,9 @@ if (Meteor.isClient) {
     game: function () {
       return getCurrentGame();
     },
+    code: function () {
+      return getAccessCode();
+    },
     missionNum: function (object) {
       var game = getCurrentGame();
       var numPlayers = missionNumPlayers(object.hash.round, game.numPlayers);

@@ -43,6 +43,9 @@
 
 <template name="score">
   {{#if game}}
+    <div class="access-code">
+      <p>Access Code: {{code}}</p>
+    </div>
     <div class="score">
       <div class="score-box {{roundFinished round=1}}"><p>{{missionNum round=1}}</p></div>
       <div class="score-box {{roundFinished round=2}}"><p>{{missionNum round=2}}</p></div>
