@@ -363,13 +363,17 @@ if (Meteor.isClient) {
       if (numChosen == roundMax) {
         var currentVote = getCurrentVote();
         var chosen = [];
-        Players.find({'gameID': game._id, 'chosen': true})
+        Players.find({'gameID': game._id})
                .fetch()
                .forEach(function (player) {
-          chosen.push(player.ord);
           var pv = PlayerVotes.findOne({voteID: currentVote._id, ord: player.ord});
-          pv.classes.push("chosen");
-          PlayerVotes.update(pv._id, { $set: { chosen: true, classes: pv.classes } });
+          if(player.chosen) {
+            chosen.push(player.ord);
+            pv.classes.push("chosen");
+          } else {
+            pv.classes = _.without(pv.classes, "chosen");
+          }
+          PlayerVotes.update(pv._id, { $set: { chosen: player.chosen, classes: pv.classes } });
         });
         Votes.update(currentVote._id, { $set: { chosen: chosen, status: "voting" }});
         Games.update(game._id, {$set: {state: "votingPhase"}});
@@ -437,6 +441,11 @@ if (Meteor.isClient) {
   });
 
   Template.votingPhase.helpers({
+    isLeader: function () {
+      var game = getCurrentGame();
+      var leaderOrd = game.turn % game.numPlayers;
+      return leaderOrd == getCurrentPlayer().ord;
+    },
     chosenPlayers: function () {
       var game = getCurrentGame();
       var players = Players.find({'gameID': game._id, 'chosen': true}, {'sort': {'ord': 1}}).fetch();
@@ -455,6 +464,19 @@ if (Meteor.isClient) {
   });
 
   Template.votingPhase.events({
+    'click .button-cancel':function () {
+      var game = Games.findOne(Session.get("gameID"));
+      var players = Players.find({'gameID': game._id});
+      resetVotes(players);
+      Games.update(game._id, {$set: {state: 'pickPhase'}});
+
+      var currentVote = getCurrentVote();
+      PlayerVotes.find({voteID: currentVote._id}).fetch()
+                 .forEach(function(pv) {
+        pv.classes = _.without(pv.classes, "chosen");
+        PlayerVotes.update(pv._id, { $set: { classes: pv.classes } });
+      });
+    },
     'click .button-accept':function () {
       var player = getCurrentPlayer();
       Players.update(player._id, {$set: {vote: "accept"}});
